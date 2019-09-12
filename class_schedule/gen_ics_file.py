@@ -22,8 +22,8 @@ CLASS_PERIOD_BEGIN_TIME = [(0, 0), (8, 0), (8, 50), \
                            (16, 40), (17, 30), (19, 0), \
                            (19, 50), (20, 40), (21, 30)]
 
-def get_data_from_directly_writen(filename):
-    ''' get data from directly writen file '''
+def get_data_from_stdin():
+    ''' get data from stdin '''
     course_list = eval(sys.stdin.read())
     return course_list
 
@@ -98,5 +98,5 @@ def get_events_by_course(course):
 if __name__ == '__main__':
     # use protobuf
     #  COURSES = get_data_from_protobuf('./class_schedule.data')
-    COURSES = get_data_from_directly_writen('./class_schedule.data')
+    COURSES = get_data_from_stdin()
     gen_ics_file(COURSES, './class_schedule.ics')

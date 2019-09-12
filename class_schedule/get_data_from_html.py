@@ -84,8 +84,8 @@ def gen_protobuf_file(courses, filename):
         # human-firendly: https://stackoverflow.com/questions/33557965/print-human-friendly-protobuf-message
         file.write(text_format.MessageToString(course_list_proto))
 
-def write_directly(courses):
-    ''' write data file directly '''
+def write_to_stdout(courses):
+    ''' write data file to stdout '''
     print(str(courses))
 
 if __name__ == '__main__':
@@ -93,4 +93,4 @@ if __name__ == '__main__':
     # use protobuf
     #  gen_protobuf_file(COURSES, './class_schedule.data')
     #  write_protobuf_file(COURSES, './class_schedule.data')
-    write_directly(COURSES)
+    write_to_stdout(COURSES)
