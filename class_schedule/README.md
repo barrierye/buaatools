@@ -11,8 +11,8 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 ## Need
 
 - Python3
-- icalendar (pip install icalender)
-- 脚本中存在中文字符（有一部分正则/判断相关也有中文字符），如有乱码注意自行修改
+- icalendar (使用`pip install icalender`命令安装)
+- 注意：脚本中存在中文字符（有一部分正则/判断相关也有中文字符），如有乱码注意自行修改
 
 ## Usage
 
