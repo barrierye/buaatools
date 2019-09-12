@@ -4,7 +4,9 @@
 
 ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal，以及其他一些主流日历应用。
 
-![最终效果](https://tva1.sinaimg.cn/large/006y8mN6gy1g6ust9morsj31850u0qrs.jpg)
+![Google icalendar效果](https://tva1.sinaimg.cn/large/006y8mN6ly1g6x6dbgjb9j31bf0u0djx.jpg)
+
+![iCal效果](https://tva1.sinaimg.cn/large/006y8mN6gy1g6ust9morsj31850u0qrs.jpg)
 
 
 
