@@ -13,25 +13,16 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 ## Need
 
 - Python3
-- icalendar (使用`pip install icalender`命令安装)
-- 注意：脚本中存在中文字符（有一部分正则/判断相关也有中文字符），如有乱码注意自行修改
+- icalendar (使用`pip install icalender`命令安装
 
 ## Usage
 
-1. 登陆选课系统，打开已选课程页面，`command+s`手动保存页面
+1. 修改`CONFIG.example.py`文件，并将新文件命名为`CONFIG.py`
 
-![手动保存页面](https://tva1.sinaimg.cn/large/006y8mN6ly1g6t7p79pkyj31760u0gpf.jpg)
-
-2. 将保存好的html文件复制进项目文件夹并进入文件夹
+2. 运行下列命令，文件夹内将生成.ICS文件`class_schedule.ics`
 
    ```bash
-   mv example.html BUAAClassSchedule/ && cd BUAAClassSchedule/
-   ```
-
-3. 解析html文件，生成.ICS文件`class_schedule.ics`
-
-   ```bash
-   cat example.html | python get_data_from_html.py | python gen_ics_file.py
+   python gen_ics_file.py
    ```
 
 5. 将`class_schedule.ics`文件导入到所需的日历应用中：
@@ -43,17 +34,6 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
    - iCal
    
      ![iCal](https://tva1.sinaimg.cn/large/006y8mN6gy1g6uq226cjuj30fo07aac8.jpg)
+     
+   - 其他日历应用
    
-   
-   
-
-
-
-
-
-## TODO
-
-模拟登陆保存html页面（期待一个好心人）
-
-
-
