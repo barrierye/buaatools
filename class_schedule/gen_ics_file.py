@@ -1,9 +1,6 @@
 #-*- coding:utf8 -*-
 # Copyright (c) 2019 barriery
 # Python release: 3.7.4
-"""
-module docstring here: TODO
-"""
 
 import datetime
 from uuid import uuid1
@@ -11,6 +8,7 @@ import pytz
 from icalendar import Calendar, Event
 import config
 import login
+import request_credit
 
 CLASS_PERIOD_BEGIN_TIME = [(0, 0), (8, 0), (8, 50), \
                            (9, 50), (10, 40), (11, 30), \
@@ -71,4 +69,7 @@ if __name__ == '__main__':
     COURSE_LIST = login.login_and_get_html(username=config.USERNAME,
                                            password=config.PASSWORD,
                                            xh=config.XH)
+    request_credit.request_credit(student_type=config.STUDENT_TYPE,
+                                  global_request_credit_dict=config.REQUEST_CREDIT,
+                                  course_list=COURSE_LIST)
     gen_ics_file(COURSE_LIST, './class_schedule.ics')
