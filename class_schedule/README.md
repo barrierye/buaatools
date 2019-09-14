@@ -4,16 +4,16 @@
 
 ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal，以及其他一些主流日历应用。
 
-![Google icalendar效果](https://tva1.sinaimg.cn/large/006y8mN6ly1g6x6dbgjb9j31bf0u0djx.jpg)
+![Google icalendar效果](https://tva1.sinaimg.cn/large/006y8mN6ly1g6ziz237c8j31fx0u042n.jpg)
 
-![iCal效果](https://tva1.sinaimg.cn/large/006y8mN6gy1g6ust9morsj31850u0qrs.jpg)
+![iCal效果](https://tva1.sinaimg.cn/large/006y8mN6ly1g6zizdqj1cj31dt0u0432.jpg)
 
 
 
 ## Need
 
 - Python3
-- icalendar (使用`pip install icalender`命令安装)
+- icalendar (`pip install icalender`)
 
 ## Usage
 
@@ -29,11 +29,12 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 
    - Google calendar
    
-     ![Google calendar](https://tva1.sinaimg.cn/large/006y8mN6gy1g6uq3o0zckj316o0gwjrn.jpg)
+     ![Google calendar](https://tva1.sinaimg.cn/large/006y8mN6ly1g6zizxwh2aj31720lqq39.jpg)
    
    - iCal
    
-     ![iCal](https://tva1.sinaimg.cn/large/006y8mN6gy1g6uq226cjuj30fo07aac8.jpg)
+     ![iCal](https://tva1.sinaimg.cn/large/006y8mN6ly1g6zj05tx4dj30ho0bq40d.jpg)
      
    - 其他日历应用
    
+
