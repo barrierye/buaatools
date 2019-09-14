@@ -8,6 +8,6 @@ This module is used to do some configuration settings.
 # Username of the unified authentication account
 USERNAME = 'barriery'
 # Password of the unified authentication account
-PASSWORD = '********'
+PASSWORD = '***********'
 # student ID
 XH = 'SY1906***'
