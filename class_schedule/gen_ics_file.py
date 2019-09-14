@@ -9,7 +9,7 @@ import datetime
 from uuid import uuid1
 import pytz
 from icalendar import Calendar, Event
-import CONFIG
+import config
 import login
 
 CLASS_PERIOD_BEGIN_TIME = [(0, 0), (8, 0), (8, 50), \
@@ -68,7 +68,7 @@ def get_events_by_course(course):
     return events
 
 if __name__ == '__main__':
-    COURSE_LIST = login.login_and_get_html(username=CONFIG.USERNAME,
-                                           password=CONFIG.PASSWORD,
-                                           xh=CONFIG.XH)
+    COURSE_LIST = login.login_and_get_html(username=config.USERNAME,
+                                           password=config.PASSWORD,
+                                           xh=config.XH)
     gen_ics_file(COURSE_LIST, './class_schedule.ics')

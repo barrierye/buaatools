@@ -10,4 +10,4 @@ USERNAME = 'barriery'
 # Password of the unified authentication account
 PASSWORD = '********'
 # student ID
-XH = '**1906***'
+XH = 'SY1906***'
