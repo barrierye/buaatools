@@ -13,7 +13,7 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 ## Need
 
 - Python3
-- icalendar (使用`pip install icalender`命令安装
+- icalendar (使用`pip install icalender`命令安装)
 
 ## Usage
 
