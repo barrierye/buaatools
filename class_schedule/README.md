@@ -8,14 +8,14 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 
 ![剩余学分](https://tva1.sinaimg.cn/large/006y8mN6ly1g70g42snv1j30ym0he405.jpg)
 
-## Requestment
+## 环境要求
 
 - Python3
 - requests (`pip install requests`) 
 - icalendar (`pip install icalender`)
 - 校园网环境
 
-## Usage
+## 如何使用
 
 1. 修改`config.example.py`文件，并将新文件命名为`config.py`。`config.py`中参数含义如下：
 
@@ -44,4 +44,6 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 
    - 其他日历应用
 
+## 需要注意什么
 
+- Windows下列出剩余学分要求的Log无法修改颜色，建议在Linux或macOS下使用以获得更好的体验。
