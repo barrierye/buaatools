@@ -34,11 +34,7 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
    REQUEST_CREDIT = {...}
    ```
 
-2. 运行下列命令，文件夹内将生成.ICS文件`class_schedule.ics`
-
-   ```bash
-   python gen_ics_file.py
-   ```
+2. 运行`gen_ics_file.py`文件，文件夹内将生成.ICS文件`class_schedule.ics`
 
 3. 将`class_schedule.ics`文件导入到所需的日历应用中：
 
