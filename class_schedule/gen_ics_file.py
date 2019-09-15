@@ -30,38 +30,29 @@ def gen_ics_file(courses, filename):
 
 def get_events_by_course(course):
     ''' get events by course '''
-    week_period_begin = int(course['week_period_begin'])
-    week_period_end = int(course['week_period_end'])
-    weekday = int(course['weekday'])
-    class_period_begin = int(course['class_period_begin'])
-    class_period_end = int(course['class_period_end'])
-    name = course['course_name']
-    place = course['place']
-    teacher = course['teacher']
-    credit = course['credit']
-    course_id = course['course_id']
-
     # zero week is 2019/8/26 00:00:00
     begin_date = datetime.datetime(2019, 8, 26, 0, 0, 0, tzinfo=pytz.timezone("Asia/Shanghai"))
-    current_day = begin_date + datetime.timedelta(days=7*week_period_begin+weekday-1)
+    current_day = begin_date + datetime.timedelta(days = 7 * int(course['week_begin']) \
+                                                       + int(course['weekday']) - 1)
     events = []
-    for class_period in range(class_period_begin, class_period_end+1):
+    for class_period in range(int(course['class_begin']), int(course['class_end'])+1):
         hour, minute = CLASS_PERIOD_BEGIN_TIME[class_period]
         current_date = current_day \
                      + datetime.timedelta(hours=hour) \
                      + datetime.timedelta(minutes=minute)
         event = Event()
         event.add('uid', str(uuid1()) + '@barriery')
-        event.add('summary', name)
+        event.add('summary', course['name'])
         event.add('dtstart', current_date)
         event.add('dtend', current_date + datetime.timedelta(minutes=45))
         event.add('dtstamp', datetime.datetime.now())
-        event.add('location', place)
-        event.add('description', 'teacher: %s, credit: %s, id: %s'%(teacher, credit, course_id))
+        event.add('location', course['place'])
+        event.add('description', 'teacher(%s), credit(%s), id(%s)' \
+                % (course['teacher'], course['credit'], course['course_id']))
         event.add('rrule', {
             'freq': 'weekly',
             'interval': 1,
-            'count': week_period_end - week_period_begin + 1})
+            'count': int(course['week_end']) - int(course['week_begin']) + 1})
         events.append(event)
     return events
 

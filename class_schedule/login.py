@@ -9,6 +9,8 @@ import re
 import hashlib
 import requests
 
+__all__ = ['login_and_get_html']
+
 def get_hidden_item(text, item_str):
     ''' get hidden item of html text '''
     item_pattern = re.compile(r'<input type="hidden" name="' + item_str + '" value="(.*?)"')
@@ -39,19 +41,18 @@ def login_and_get_html(username, password, xh):
     selected_courses = response.json().get('attributes').get('kclb')
     course_list = []
     key_map = {'rklsgzzh': 'teacher',
-               'kcmc': 'course_name',
-               'qszc': 'week_period_begin',
-               'zzzc': 'week_period_end',
-               'qsjs': 'class_period_begin',
-               'jsjs': 'class_period_end',
+               'kcmc': 'name',
+               'qszc': 'week_begin',
+               'zzzc': 'week_end',
+               'qsjs': 'class_begin',
+               'jsjs': 'class_end',
                'kch': 'course_id',
                'skjsbh': 'place',
                'zxf': 'credit',
                'zj': 'weekday',
                'id': 'id_in_system'}
     for item in selected_courses:
-        course = {}
-        for magic_key, human_firendly_key in key_map.items():
-            course[human_firendly_key] = item[magic_key]
+        course = {human_firendly_key: item[magic_key] \
+                for magic_key, human_firendly_key in key_map.items()}
         course_list.append(course)
     return course_list
