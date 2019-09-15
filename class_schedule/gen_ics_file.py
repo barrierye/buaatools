@@ -30,6 +30,10 @@ def gen_ics_file(courses, filename):
 
 def get_events_by_course(course):
     ''' get events by course '''
+    if not course['weekday']:
+        # 某些课程（例如英语免修）没有上课周次
+        return []
+
     # zero week is 2019/8/26 00:00:00
     begin_date = datetime.datetime(2019, 8, 26, 0, 0, 0, tzinfo=pytz.timezone("Asia/Shanghai"))
     current_day = begin_date + datetime.timedelta(days = 7 * int(course['week_begin']) \
