@@ -6,7 +6,7 @@
 
 通过设置`config.py`文件，可以显示剩余学分要求：
 
-![剩余学分](https://tva1.sinaimg.cn/large/006y8mN6ly1g6zl8jys5dj30sg0e642w.jpg)
+![剩余学分](https://tva1.sinaimg.cn/large/006y8mN6ly1g6zztfeq8mj30sg09u0tn.jpg)
 
 ## Need
 
