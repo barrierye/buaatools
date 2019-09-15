@@ -63,4 +63,4 @@ if __name__ == '__main__':
     request_credit.check_request_credit(student_type=config.STUDENT_TYPE,
                                         total_request_credit_dict=config.REQUEST_CREDIT,
                                         course_list=COURSE_LIST)
-    gen_ics_file(COURSE_LIST, './class_schedule.ics')
+    gen_ics_file(COURSE_LIST, 'class_schedule.ics')
