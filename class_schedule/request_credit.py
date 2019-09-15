@@ -6,11 +6,14 @@ This module is used to check the remaining credits.
 """
 
 import re
+import platform
 
 __all__ = ['check_request_credit']
 
 def get_colorful_str(string, color):
     ''' get colorful str '''
+    if platform.system() == "Windows":
+        return string
     color_map = {'black': '30',
                  'red': '31',
                  'green': '32',
