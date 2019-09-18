@@ -6,9 +6,15 @@ import datetime
 from uuid import uuid1
 import pytz
 from icalendar import Calendar, Event
+
+import sys
+sys.path.append('..')
+
 import config
-import login
-import request_credit
+from helper import logger
+from spider import course
+
+__all__ = ['gen_ics_file']
 
 CLASS_PERIOD_BEGIN_TIME = [(0, 0), (8, 0), (8, 50), \
                            (9, 50), (10, 40), (11, 30), \
@@ -86,12 +92,12 @@ def get_events_by_course(course, classbreak):
     return events
 
 if __name__ == '__main__':
-    session = login.login(username=config.USERNAME,
-                          password=config.PASSWORD)
-    COURSE_LIST = login.query_course(session, xh=config.XH)
-    request_credit.check_request_credit(student_type=config.STUDENT_TYPE,
-                                        total_request_credit_dict=config.REQUEST_CREDIT,
-                                        course_list=COURSE_LIST)
+    COURSE_LIST = course.query_course_by_xh(username=config.USERNAME,
+                                            password=config.PASSWORD,
+                                            xh=config.XH)
     gen_ics_file(courses=COURSE_LIST,
                  classbreak=config.CLASSBREAK,
                  filename='class_schedule.ics')
+    course.check_request_credit(student_type=config.STUDENT_TYPE,
+                                total_request_credit_dict=config.REQUEST_CREDIT,
+                                course_list=COURSE_LIST)

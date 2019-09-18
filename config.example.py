@@ -5,18 +5,26 @@
 This module is used to do some configuration settings.
 """
 
+#########################
+# general configuration #
+#########################
 # Username of the unified authentication account
 USERNAME = 'barriery'
 # Password of the unified authentication account
 PASSWORD = '***********'
 # Student ID
 XH = 'SY1906***'
-# Whether to add breaks during class
-CLASSBREAK  = True
-# Student type. You can configure it yourself if you need other majors.
-# Built-in list: ['软件工程（硕士）', '计算机科学与技术（硕士）', '计算机技术（全日制专硕）'] 
-STUDENT_TYPE = '软件工程（硕士）'
 
+
+####################################
+# configuration for class_schedule #
+####################################
+# Whether to add breaks during class
+CLASSBREAK = True
+# Student type.
+STUDENT_TYPE = '软件工程（硕士）'
+# Training program. You can configure it yourself if you need other majors.
+# Built-in list: ['软件工程（硕士）', '计算机科学与技术（硕士）', '计算机技术（全日制专硕）']
 REQUEST_CREDIT = {
     '计算机技术（全日制专硕）': {
         '思想政治理论课程组': {
