@@ -17,8 +17,8 @@ def get_hidden_item(text, item_str):
     item = re.findall(item_pattern, text)[0]
     return item
 
-def login_and_get_html(username, password, xh):
-    ''' login and get html text '''
+def login(username, password):
+    ''' login '''
     sen = requests.Session()
     header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
     url = 'http://gsmis.buaa.edu.cn/'
@@ -30,15 +30,27 @@ def login_and_get_html(username, password, xh):
                'execution': get_hidden_item(text, 'execution'),
                '_eventId': get_hidden_item(text, '_eventId')}
     url = 'https://sso.buaa.edu.cn/login?service=http://gsmis.buaa.edu.cn/'
-    response = sen.post(url, headers=header, data=payload)
+    sen.post(url, headers=header, data=payload)
+    return sen
+    
+def query_course(session, xh, fake_xh=None):
+    header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
+
+    # casue 'yuXuanKeApiController.do?getSelectedCourses' do not verify, you can query any xh.
+    if fake_xh:
+        xh = fake_xh
 
     magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
     header['X-BUAA-SIGN'] = hashlib.md5(magic_string.encode()).hexdigest().upper()
 
     url = 'http://gsmis.buaa.edu.cn/api/yuXuanKeApiController.do?getSelectedCourses'
     payload = {'body': '{"xh":"%s"}'%xh}
-    response = sen.post(url, headers=header, data=payload)
-    selected_courses = response.json().get('attributes').get('kclb')
+    response = session.post(url, headers=header, data=payload)
+    attributes = response.json().get('attributes')
+    if not attributes:
+        print("[ERROR] Failed to get course_list. Maybe the student id not in this system.")
+        return []
+    selected_courses = attributes.get('kclb')
     course_list = []
     key_map = {'rklsgzzh': 'teacher',
                'kcmc': 'name',
@@ -50,7 +62,8 @@ def login_and_get_html(username, password, xh):
                'skjsbh': 'place',
                'zxf': 'credit',
                'zj': 'weekday',
-               'id': 'id_in_system'}
+               'id': 'id_in_system',
+               'yyz': 'willingness_value'}
     for item in selected_courses:
         course = {human_firendly_key: item[magic_key] \
                 for magic_key, human_firendly_key in key_map.items()}
