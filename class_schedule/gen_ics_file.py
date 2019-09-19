@@ -92,9 +92,9 @@ def get_events_by_course(course, classbreak):
     return events
 
 if __name__ == '__main__':
-    COURSE_LIST = course.query_course_by_xh(username=config.USERNAME,
-                                            password=config.PASSWORD,
-                                            xh=config.XH)
+    COURSE_LIST = course.query_pre_selected_course_by_xh(username=config.USERNAME,
+                                                         password=config.PASSWORD,
+                                                         xh=config.XH)
     gen_ics_file(courses=COURSE_LIST,
                  classbreak=config.CLASSBREAK,
                  filename='class_schedule.ics')

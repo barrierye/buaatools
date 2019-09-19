@@ -14,11 +14,11 @@ sys.path.append('..')
 from helper import logger
 from spider import login
 
-__all__ = ['query_course_by_xh', 'check_request_credit']
+__all__ = ['query_pre_selected_course_by_xh', 'check_request_credit']
 
 HOME = 'http://gsmis.buaa.edu.cn/'
 
-def query_course_by_xh(username, password, xh):
+def query_pre_selected_course_by_xh(username, password, xh):
     success = []
     session = login.login(target=HOME, username=username, password=password, success=success)
     if not success:
