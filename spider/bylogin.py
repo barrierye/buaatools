@@ -10,7 +10,7 @@ import requests
 
 import sys
 sys.path.append('..')
-from helper import logger
+from helper import bylogger
 
 __all__ = ['login']
 
@@ -24,7 +24,7 @@ def login(target, username, password, success=[]):
     session = requests.Session()
     support_target_set = ['http://gsmis.buaa.edu.cn/', 'https://icw.buaa.edu.cn/']
     if (target not in support_target_set):
-        sys.stderr.write(logger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
         return None
 
     header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
@@ -39,7 +39,7 @@ def login(target, username, password, success=[]):
     response = session.post(url, headers=header, data=payload)
     
     if not response:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] status code is %d\n" % response.status_code, "red"))
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] status code is %d\n" % response.status_code, "red"))
         return None
 
     #TODO: check if login successful

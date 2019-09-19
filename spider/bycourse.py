@@ -11,19 +11,23 @@ import requests
 
 import sys
 sys.path.append('..')
-from helper import logger
-from spider import login
+from helper import bylogger
+from spider import bylogin
 
 __all__ = ['query_pre_selected_course_by_xh', 'check_request_credit']
 
 HOME = 'http://gsmis.buaa.edu.cn/'
 
-def query_pre_selected_course_by_xh(username, password, xh):
-    success = []
-    session = login.login(target=HOME, username=username, password=password, success=success)
-    if not success:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] Failed to login.\n", "red"))
-        return []
+def query_pre_selected_course_by_xh(xh, username=None, password=None, session=None):
+    if session is None:
+        if username is None or password is None:
+            sys.stderr.write(bylogger.get_colorful_str("[ERROR] username or password is None", "red"))
+            return []
+        success = []
+        session = bylogin.login(target=HOME, username=username, password=password, success=success)
+        if not success:
+            sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed to login.\n", "red"))
+            return []
     
     # here is a stupid authenticate, you can query any info by using different xh after login.
     magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
@@ -32,9 +36,12 @@ def query_pre_selected_course_by_xh(username, password, xh):
     url = HOME + 'api/yuXuanKeApiController.do?getSelectedCourses'
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
+    if response.json().get('success') is False:
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('success': False).\n", "red"))
+        return []
     attributes = response.json().get('attributes')
     if not attributes:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] Failed to get course_list. Maybe the student id not in this system.\n", "red"))
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed to get course list. Maybe the student id not in this system.\n", "red"))
         return []
     selected_courses = attributes.get('kclb')
     course_list = []
@@ -73,7 +80,7 @@ def check_course(request_key, request_value, course):
         request_value['total'] -= total_credit
         return total_credit
     else:
-        print(logger.get_colorful_str('[ERROR]', 'red') + ' error type.')
+        print(bylogger.get_colorful_str('[ERROR]', 'red') + ' error type.')
         exit(1)
 
 def print_info(request_key, request_value, loop_deep):
@@ -83,25 +90,25 @@ def print_info(request_key, request_value, loop_deep):
     if isinstance(request_value, int):
         if request_value > 0:
             if request_key != 'total':
-                print(info_str + logger.get_colorful_str('[WARN]', 'yellow')
+                print(info_str + bylogger.get_colorful_str('[WARN]', 'yellow')
                       + ' course(%s) has not been completed yet.' % request_key)
         return request_value <= 0
     finish_flag = True
     for item in request_value:
         finish_flag = print_info(item, request_value[item], loop_deep+1) and finish_flag
     if request_value['total'] > 0:
-        print(info_str + logger.get_colorful_str('[WARN]', 'yellow')
+        print(info_str + bylogger.get_colorful_str('[WARN]', 'yellow')
               + ' %s missing %d points.' % (request_key, request_value['total']))
         if request_key == '跨学科课程组':
             print(backspace * loop_deep
-                  + logger.get_colorful_str('* This group(跨学科课程组) is special, please check it manually.', 'purple'))
+                  + bylogger.get_colorful_str('* This group(跨学科课程组) is special, please check it manually.', 'purple'))
         return False
     elif finish_flag:
-        print(info_str + logger.get_colorful_str('[INFO]', 'green')
+        print(info_str + bylogger.get_colorful_str('[INFO]', 'green')
               + ' You have filled all the credits in %s.'%request_key)
         return True
     else:
-        print(info_str + logger.get_colorful_str('[WARN]', 'yellow')
+        print(info_str + bylogger.get_colorful_str('[WARN]', 'yellow')
               + ' You have filled all the credits in %s, but there are some items not finished.'%request_key)
         return False
 

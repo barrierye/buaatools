@@ -11,8 +11,7 @@ import sys
 sys.path.append('..')
 
 import config
-from helper import logger
-from spider import course
+from spider import bycourse
 
 __all__ = ['gen_ics_file']
 
@@ -92,12 +91,13 @@ def get_events_by_course(course, classbreak):
     return events
 
 if __name__ == '__main__':
-    COURSE_LIST = course.query_pre_selected_course_by_xh(username=config.USERNAME,
-                                                         password=config.PASSWORD,
-                                                         xh=config.XH)
-    gen_ics_file(courses=COURSE_LIST,
-                 classbreak=config.CLASSBREAK,
-                 filename='class_schedule.ics')
-    course.check_request_credit(student_type=config.STUDENT_TYPE,
-                                total_request_credit_dict=config.REQUEST_CREDIT,
-                                course_list=COURSE_LIST)
+    COURSE_LIST = bycourse.query_pre_selected_course_by_xh(xh=config.XH,
+                                                         username=config.USERNAME,
+                                                         password=config.PASSWORD)
+    if COURSE_LIST:
+        gen_ics_file(courses=COURSE_LIST,
+                     classbreak=config.CLASSBREAK,
+                     filename='class_schedule.ics')
+        bycourse.check_request_credit(student_type=config.STUDENT_TYPE,
+                                    total_request_credit_dict=config.REQUEST_CREDIT,
+                                    course_list=COURSE_LIST)
