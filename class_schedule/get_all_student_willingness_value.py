@@ -10,8 +10,7 @@ import sys
 sys.path.append('..')
 
 import config
-from spider import bylogin
-from spider import bycourse
+from spider import bylogin, bycourse
 
 def get_willingness_list(username, password, student_numbers):
     ''' student_numbers: ['SY1906000', 'SY1906001', ...] '''
@@ -65,7 +64,7 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list):
         if key in course_id_set:
             continue
         course_id_set.add(key)
-        print("%s [%s]" % (key, course['willingness_value']))
+        print("%s [%s] <Number of students with the same willingness as you>:" % (key, course['willingness_value']))
         willingness_list = willingness_value_list[key]
         willingness_list.reverse()
         for i, v in enumerate(willingness_list):
@@ -73,6 +72,7 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list):
                 print("%d" % i)
                 if v < int(course['willingness_value']):
                     break
+        print("------------------------------------------")
 
 if __name__ == '__main__':
     STUDENT_NUMBERS = ['SY1906000', 'SY1906001']

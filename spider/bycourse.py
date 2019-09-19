@@ -36,14 +36,20 @@ def query_pre_selected_course_by_xh(xh, username=None, password=None, session=No
     url = HOME + 'api/yuXuanKeApiController.do?getSelectedCourses'
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
+
     if response.json().get('success') is False:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('success': False).\n", "red"))
         return []
+    if response.json().get('msg') == '此学生还没有添加预选课程':
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('not in pre-select period' or 'here is no pre-selected courses').\n", "red"))
+        return []
+    
     attributes = response.json().get('attributes')
     if not attributes:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed to get course list. Maybe the student id not in this system.\n", "red"))
         return []
     selected_courses = attributes.get('kclb')
+    
     course_list = []
     key_map = {'rklsgzzh': 'teacher',
                'kcmc': 'name',
