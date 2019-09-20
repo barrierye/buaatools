@@ -17,7 +17,7 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
 
 ## 如何使用
 
-1. 修改`config.example.py`文件，并将新文件命名为`config.py`。`config.py`中参数含义如下：
+1. 修改`../config.example.py`文件，并将新文件命名为`config.py`。`config.py`中参数含义如下：
 
    ```python
    # 统一认证账号用户名
