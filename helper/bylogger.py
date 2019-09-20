@@ -17,7 +17,7 @@ def get_colorful_str(string, color):
                  'blue': '34',
                  'purple': '35',
                  'cyan': '36',
-                 'white': 37}
+                 'white': '37'}
     color_number = color_map.get(color)
     if not color_number:
         return string
