@@ -80,5 +80,5 @@ if __name__ == '__main__':
                                                   config.PASSWORD,
                                                   STUDENT_NUMBERS)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
-    willingness_value_list = read_willingness_file('willingness_value_list.txt')
+    #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
     query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list)
