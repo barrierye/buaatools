@@ -20,12 +20,14 @@ def get_hidden_items(text):
     items = re.findall(item_pattern, text)
     return {item[0]: item[1] for item in items}
 
-def login(target, username, password, success=[]):
+def login(target, username, password, need_flag=None):
     session = requests.Session()
     support_target_set = ['http://gsmis.buaa.edu.cn/', 'https://icw.buaa.edu.cn/']
     if (target not in support_target_set):
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
-        return None
+        if need_flag:
+            session = [session, False]
+        return session
 
     header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
     response = session.get(target, headers=header)
@@ -40,9 +42,13 @@ def login(target, username, password, success=[]):
     
     if not response:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] status code is %d\n" % response.status_code, "red"))
-        return None
+        if need_flag:
+            session = [session, False]
+        return session
 
     #TODO: check if login successful
 
-    success.append(True)
+    if need_flag:
+        session = [session, True]
+
     return session

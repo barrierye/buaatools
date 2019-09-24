@@ -18,13 +18,20 @@ __all__ = ['query_pre_selected_course_by_xh', 'check_request_credit']
 
 HOME = 'http://gsmis.buaa.edu.cn/'
 
-def query_pre_selected_course_by_xh(xh, username=None, password=None, session=None):
+def query_course_by_xh_in_pre_selection_stage(xh, username=None, password=None, session=None, debug=False):
+    url = HOME + 'api/yuXuanKeApiController.do?getSelectedCourses'
+    return query_course_by_xh(url=url, xh=xh, username=username, password=password, session=session, debug=debug)
+
+def query_course_by_xh_in_adjustment_stage(xh, username=None, password=None, session=None, debug=False):
+    url = HOME + 'api/yuXuanKeApiController.do?txSelectedCourses'
+    return query_course_by_xh(url=url, xh=xh, username=username, password=password, session=session, debug=debug)
+
+def query_course_by_xh(url, xh, username=None, password=None, session=None, debug=False):
     if session is None:
         if username is None or password is None:
             sys.stderr.write(bylogger.get_colorful_str("[ERROR] username or password is None", "red"))
             return []
-        success = []
-        session = bylogin.login(target=HOME, username=username, password=password, success=success)
+        session, success = bylogin.login(target=HOME, username=username, password=password, need_flag=True)
         if not success:
             sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed to login.\n", "red"))
             return []
@@ -32,21 +39,25 @@ def query_pre_selected_course_by_xh(xh, username=None, password=None, session=No
     # here is a stupid authenticate, you can query any info by using different xh after login.
     magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
     session.headers['X-BUAA-SIGN'] = hashlib.md5(magic_string.encode()).hexdigest().upper()
-
-    url = HOME + 'api/yuXuanKeApiController.do?getSelectedCourses'
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
 
     if response.json().get('success') is False:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('success': False).\n", "red"))
+        if debug:
+            sys.stderr.write(response.content.decode('utf-8'))
         return []
     if response.json().get('msg') == '此学生还没有添加预选课程':
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('not in pre-select period' or 'here is no pre-selected courses').\n", "red"))
+        if debug:
+            sys.stderr.write(response.content.decode('utf-8'))
         return []
     
     attributes = response.json().get('attributes')
     if not attributes:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed to get course list. Maybe the student id not in this system.\n", "red"))
+        if debug:
+            sys.stderr.write(response.content.decode('utf-8'))
         return []
     selected_courses = attributes.get('kclb')
     
