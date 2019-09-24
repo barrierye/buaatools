@@ -91,14 +91,11 @@ def get_events_by_course(course, classbreak):
     return events
 
 if __name__ == '__main__':
-    #  COURSE_LIST = bycourse.query_course_by_xh_in_pre_selection_stage(xh=config.XH,
-                                                                     #  username=config.USERNAME,
-                                                                     #  password=config.PASSWORD,
-                                                                     #  debug=False)
-    COURSE_LIST = bycourse.query_course_by_xh_in_adjustment_stage(xh=config.XH,
-                                                                  username=config.USERNAME,
-                                                                  password=config.PASSWORD,
-                                                                  debug=False)
+    COURSE_LIST = bycourse.query_course_by_xh(stage=config.STAGE,
+                                              xh=config.XH,
+                                              username=config.USERNAME,
+                                              password=config.PASSWORD,
+                                              debug=False)
     if COURSE_LIST:
         gen_ics_file(courses=COURSE_LIST,
                      classbreak=config.CLASSBREAK,

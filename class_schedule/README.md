@@ -26,6 +26,9 @@ ICS文件是标准日历格式文件，可以被导入到Google calendar，iCal�
    PASSWORD = '***********'
    # 学号
    XH = 'SY1906***'
+   
+   # 选课时期（目前只实现了预选课，挑选课阶段） ['preparatory', 'adjustment']
+   STAGE = 'adjustment'
    # 是否显示课间休息
    CLASSBREAK  = True
    # （可选）学生类型，用于检查剩余学分要求。内置'软件工程（硕士）', '计算机科学与技术（硕士）', '计算机技术（全日制专硕）'三种培养方案。

@@ -15,12 +15,12 @@ from spider import bylogin, bycourse
 def get_willingness_list(username, password, student_numbers):
     ''' student_numbers: ['SY1906000', 'SY1906001', ...] '''
     session = bylogin.login(target='http://gsmis.buaa.edu.cn/',
-                          username=username,
-                          password=password)
+                            username=username,
+                            password=password)
     course_willingness = {}
     for xh in student_numbers:
         print("query xh[%s]..." % xh)
-        courses = bycourse.query_pre_selected_course_by_xh(xh=xh, session=session)
+        courses = bycourse.query_course_by_xh(stage='preparatory', xh=xh, session=session)
         courses_id_set = set()
         for course in courses:
             key = "%s(%s)" % (course['name'], course['course_id'])
@@ -57,7 +57,7 @@ def read_willingness_file(filename):
 def query_my_willingness_rank(username, password, xh, willingness_value_list):
     session = bylogin.login(target='http://gsmis.buaa.edu.cn/',
                             username=username, password=password)
-    courses = bycourse.query_pre_selected_course_by_xh(xh=xh, session=session)
+    courses = bycourse.query_course_by_xh(stage='preparatory', xh=xh, session=session)
     course_id_set = set()
     for course in courses:
         key = "%s(%s)" % (course['name'], course['course_id'])

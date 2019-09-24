@@ -14,19 +14,18 @@ sys.path.append('..')
 from helper import bylogger
 from spider import bylogin
 
-__all__ = ['query_pre_selected_course_by_xh', 'check_request_credit']
+__all__ = ['query_course_by_xh', 'check_request_credit']
 
 HOME = 'http://gsmis.buaa.edu.cn/'
 
-def query_course_by_xh_in_pre_selection_stage(xh, username=None, password=None, session=None, debug=False):
-    url = HOME + 'api/yuXuanKeApiController.do?getSelectedCourses'
-    return query_course_by_xh(url=url, xh=xh, username=username, password=password, session=session, debug=debug)
+def query_course_by_xh(stage, xh, username=None, password=None, session=None, debug=False):
+    stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
+                  'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses'}
+    if stage not in stage_list:
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] stage not in-built", "red"))
+        return []
+    url = HOME + stage_list[stage]
 
-def query_course_by_xh_in_adjustment_stage(xh, username=None, password=None, session=None, debug=False):
-    url = HOME + 'api/yuXuanKeApiController.do?txSelectedCourses'
-    return query_course_by_xh(url=url, xh=xh, username=username, password=password, session=session, debug=debug)
-
-def query_course_by_xh(url, xh, username=None, password=None, session=None, debug=False):
     if session is None:
         if username is None or password is None:
             sys.stderr.write(bylogger.get_colorful_str("[ERROR] username or password is None", "red"))
