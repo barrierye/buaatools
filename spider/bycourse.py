@@ -121,7 +121,7 @@ def print_info(request_key, request_value, loop_deep):
         return False
     elif finish_flag:
         print(info_str + bylogger.get_colorful_str('[INFO]', 'green')
-              + ' You have filled all the credits in %s.'%request_key)
+              + ' You have filled all the credits in %s(beyond %d points).'%(request_key, -request_value['total']))
         return True
     else:
         print(info_str + bylogger.get_colorful_str('[WARN]', 'yellow')
