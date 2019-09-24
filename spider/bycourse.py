@@ -22,7 +22,7 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
     stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
                   'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses'}
     if stage not in stage_list:
-        sys.stderr.write(bylogger.get_colorful_str("[ERROR] stage not in-built", "red"))
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] stage(%s) not in-built"%stage, "red"))
         return []
     url = HOME + stage_list[stage]
 
