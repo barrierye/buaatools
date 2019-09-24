@@ -99,7 +99,7 @@ if __name__ == '__main__':
     if COURSE_LIST:
         gen_ics_file(courses=COURSE_LIST,
                      classbreak=config.CLASSBREAK,
-                     filename='class_schedule.ics')
+                     filename='curriculum.ics')
         bycourse.check_request_credit(student_type=config.STUDENT_TYPE,
                                     total_request_credit_dict=config.REQUEST_CREDIT,
                                     course_list=COURSE_LIST)
