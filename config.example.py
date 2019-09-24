@@ -22,7 +22,7 @@ XH = 'SY1906***'
 # Stage: ['preparatory', 'adjustment']
 STAGE = 'adjustment'
 # Whether to add breaks during class
-CLASSBREAK = True
+CLASSBREAK = False
 # Student type.
 STUDENT_TYPE = '软件工程（硕士）'
 # Training program. You can configure it yourself if you need other majors.
