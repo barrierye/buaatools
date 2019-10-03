@@ -7,9 +7,6 @@ from uuid import uuid1
 import pytz
 from icalendar import Calendar, Event
 
-import sys
-sys.path.append('..')
-
 import config
 from spider import bycourse
 

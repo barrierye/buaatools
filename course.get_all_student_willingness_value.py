@@ -1,13 +1,7 @@
 #-*- coding:utf8 -*-
 # Copyright (c) 2019 barriery
 # Python release: 3.7.4
-"""
-module docstring: TODO
-"""
 import time
-
-import sys
-sys.path.append('..')
 
 import config
 from spider import bylogin, bycourse

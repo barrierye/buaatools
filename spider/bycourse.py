@@ -10,7 +10,6 @@ import hashlib
 import requests
 
 import sys
-sys.path.append('..')
 from helper import bylogger
 from spider import bylogin
 

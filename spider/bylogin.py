@@ -9,7 +9,6 @@ import re
 import requests
 
 import sys
-sys.path.append('..')
 from helper import bylogger
 
 __all__ = ['login']
