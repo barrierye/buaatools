@@ -16,21 +16,25 @@ from spider import bylogin
 __all__ = ['query_course_by_xh', 'check_request_credit']
 
 HOME = 'http://gsmis.buaa.edu.cn/'
+HOME_WITH_VPN = 'https://gsmis.e.buaa.edu.cn/'
 
-def query_course_by_xh(stage, xh, username=None, password=None, session=None, debug=False):
+def query_course_by_xh(stage, xh, username=None, password=None, session=None, debug=False, vpn=False):
     stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
                   'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses',
                   'ending': 'api/tuiXuanKeApiController.do?getDropCourses'}
     if stage not in stage_list:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] stage(%s) not in-built"%stage, "red"))
         return []
-    url = HOME + stage_list[stage]
+    home = HOME
+    if vpn:
+        home = HOME_WITH_VPN
+    url = home + stage_list[stage]
 
     if session is None:
         if username is None or password is None:
             sys.stderr.write(bylogger.get_colorful_str("[ERROR] username or password is None", "red"))
             return []
-        session, success = bylogin.login(target=HOME, username=username, password=password, need_flag=True)
+        session, success = bylogin.login(target=home, username=username, password=password, need_flag=True)
         if not success:
             sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed to login.\n", "red"))
             return []
@@ -47,7 +51,12 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
             sys.stderr.write(response.content.decode('utf-8'))
         return []
     if response.json().get('msg') == '此学生还没有添加预选课程':
-        sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('not in pre-select period' or 'here is no pre-selected courses').\n", "red"))
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('msg': '此学生还没有添加预选课程').\n", "red"))
+        if debug:
+            sys.stderr.write(response.content.decode('utf-8'))
+        return []
+    if response.json().get('msg') == '此学生还没有退选课程':
+        sys.stderr.write(bylogger.get_colorful_str("[ERROR] Failed('msg': '此学生还没有退选课程').\n", "red"))
         if debug:
             sys.stderr.write(response.content.decode('utf-8'))
         return []
