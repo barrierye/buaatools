@@ -19,7 +19,8 @@ HOME = 'http://gsmis.buaa.edu.cn/'
 
 def query_course_by_xh(stage, xh, username=None, password=None, session=None, debug=False):
     stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
-                  'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses'}
+                  'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses',
+                  'ending': 'api/tuiXuanKeApiController.do?getDropCourses'}
     if stage not in stage_list:
         sys.stderr.write(bylogger.get_colorful_str("[ERROR] stage(%s) not in-built"%stage, "red"))
         return []

@@ -19,8 +19,8 @@ XH = 'SY1906***'
 ####################################
 # configuration for class_schedule #
 ####################################
-# Stage: ['preparatory', 'adjustment']
-STAGE = 'adjustment'
+# Stage: ['preparatory', 'adjustment', 'ending']
+STAGE = 'ending'
 # Whether to add breaks during class
 CLASSBREAK = False
 # Student type.
