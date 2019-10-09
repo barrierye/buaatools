@@ -37,7 +37,7 @@
 
 - course.gen_calendar_file.py
 
-  通过模拟登陆选课网站爬取课程信息，并生成.ICS文件，可以导入到Google calendar，iCal以及其他一些主流日历应用。
+  通过模拟登陆选课网站爬取课程信息，并生成.ICS文件，可以导入到Google calendar，iCal以及其他一些主流日历应用。在线版: 49.233.70.188:8000/?xh={学号}
 
 - course.get_all_student_willingness_value.py
 
