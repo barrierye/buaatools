@@ -13,39 +13,41 @@
 ```bash
 .
 ├── README.md
-├── config.example.py
-├── course.README.md
-├── course.gen_calendar_file.py
-├── course.get_all_student_willingness_value.py
-├── helper
+├── buaatools
 │   ├── __init__.py
-│   └── bylogger.py
-└── spider
-    ├── README.md
-    ├── __init__.py
-    ├── bycourse.py
-    └── bylogin.py
+│   ├── helper
+│   │   ├── __init__.py
+│   │   └── bylogger.py
+│   └── spider
+│       ├── README.md
+│       ├── __init__.py
+│       ├── bycourse.py
+│       └── bylogin.py
+├── config.example.py
+├── gen_calendar_file.README.md
+├── gen_calendar_file.py
+└── get_all_student_willingness_value.py
 ```
 
 - config.example.py 
 
   配置文件
 
-- course.README.md
+- gen_calendar_file.README.md
 
-  course文件相关的README
+  gen_calendar_file文件的README
 
-- course.gen_calendar_file.py
+- gen_calendar_file.py
 
   通过模拟登陆选课网站爬取课程信息，并生成.ICS文件，可以导入到Google calendar，iCal以及其他一些主流日历应用。在线版: 49.233.70.188:8000/?xh={学号}
 
-- course.get_all_student_willingness_value.py
+- get_all_student_willingness_value.py
 
   获取所给学号列表的所有人预选课的意愿值，并列出自己意愿值的在所选课中的排名。
 
-- [spider](http://gitlab.act.buaa.edu.cn/yebw/buaa-tools/tree/master/spider) 校内网站模拟登陆工具
+- buaatools/spider 校内网站模拟登陆工具
 
-  > bylog.py
+  > bylogin.py
   
   提供登陆校内网站的API。目前只支持`http://gsmis.buaa.edu.cn/`
   

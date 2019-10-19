@@ -4,7 +4,7 @@
 import time
 
 import config
-from spider import bylogin, bycourse
+from buaatools.spider import bylogin, bycourse
 
 def get_willingness_list(username, password, student_numbers):
     ''' student_numbers: ['SY1906000', 'SY1906001', ...] '''

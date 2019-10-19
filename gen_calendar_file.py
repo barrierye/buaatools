@@ -1,6 +1,6 @@
 #-*- coding:utf8 -*-
 # Copyright (c) 2019 barriery
-# Python release: 3.7.4
+# Python release: 3.7.0
 
 import datetime
 from uuid import uuid1
@@ -8,7 +8,7 @@ import pytz
 from icalendar import Calendar, Event
 
 import config
-from spider import bycourse
+from buaatools.spider import bycourse
 
 __all__ = ['gen_ics_file']
 

@@ -1,6 +1,6 @@
 #-*- coding:utf8 -*-
 # Copyright (c) 2019 barriery
-# Python release: 3.7.4
+# Python release: 3.7.0
 """
 This module is used to simulate the page for the course selection and get thml text.
 """
@@ -9,7 +9,7 @@ import re
 import requests
 
 import sys
-from helper import bylogger
+from buaatools.helper import bylogger
 
 __all__ = ['login']
 

@@ -1,6 +1,6 @@
 #-*- coding:utf8 -*-
 # Copyright (c) 2019 barriery
-# Python release: 3.7.4
+# Python release: 3.7.0
 """
 This module is used to simulate the page for the course selection and get thml text.
 """
@@ -10,8 +10,8 @@ import hashlib
 import requests
 
 import sys
-from helper import bylogger
-from spider import bylogin
+from buaatools.helper import bylogger
+from buaatools.spider import bylogin
 
 __all__ = ['query_course_by_xh', 'check_request_credit']
 
