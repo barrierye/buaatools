@@ -23,7 +23,7 @@ pip install dist/buaatools-0.0.1-py3-none-any.whl
 ## Usage
 
 ```python
-from buaatools.spider import login
+from buaatools.spider import login, course
 
 target = 'https://gsmis.e.buaa.edu.cn:443'
 username = 'username'
@@ -36,6 +36,7 @@ courses = course.query_course_by_xh(stage='ending', xh=xh, session=session, vpn=
 if courses:
     # 生成课程日历文件
     courses.gen_ics_file(classbreak=False, filename='curriculum.ics')
+    print('curriculum.ics has been generated.')
 ```
 
 ## Some sample examples
