@@ -30,9 +30,9 @@ username = 'username'
 password = 'password'
 xh = 'SY1906123'
 # 校外登陆校内网站
-session = bylogin.login_with_vpn(target=target, username=username, password=password)
+session = login.login_with_vpn(target=target, username=username, password=password)
 # 获取当前学号的选课信息
-courses = bycourse.query_course_by_xh(stage='ending', xh=xh, session=session, vpn=True)
+courses = course.query_course_by_xh(stage='ending', xh=xh, session=session, vpn=True)
 if courses:
     # 生成课程日历文件
     courses.gen_ics_file(classbreak=False, filename='curriculum.ics')
