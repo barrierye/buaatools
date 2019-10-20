@@ -9,11 +9,11 @@ import re
 import requests
 
 import sys
-from buaatools.helper import bylogger
+from buaatools.helper import logger
 
-__all__ = ['login']
+__all__ = ['login', 'login_with_vpn']
 
-def get_hidden_items(text):
+def _get_hidden_items(text):
     ''' get hidden item of html text '''
     item_pattern = re.compile(r'<input type="hidden" name="(.*?)" value="(.*?)"')
     items = re.findall(item_pattern, text)
@@ -23,7 +23,7 @@ def login_with_vpn(target, username, password, need_flag=None):
     session = requests.Session()
     support_target_set = ['https://gsmis.e.buaa.edu.cn:443']
     if (target not in support_target_set):
-        sys.stderr.write(bylogger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
+        sys.stderr.write(logger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
         if need_flag:
             session = [session, False]
         return session
@@ -33,7 +33,7 @@ def login_with_vpn(target, username, password, need_flag=None):
     response = session.get(url, headers=header)
     text = response.content.decode('utf-8')
 
-    payload = get_hidden_items(text)
+    payload = _get_hidden_items(text)
     payload['user[login]'] = username
     payload['user[password]'] = password
     payload['user[dymatice_code]'] = 'unknown'
@@ -52,7 +52,7 @@ def login(target, username, password, need_flag=None):
     session = requests.Session()
     support_target_set = ['http://gsmis.buaa.edu.cn/']
     if (target not in support_target_set):
-        sys.stderr.write(bylogger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
+        sys.stderr.write(logger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
         if need_flag:
             session = [session, False]
         return session
@@ -61,7 +61,7 @@ def login(target, username, password, need_flag=None):
     response = session.get(target, headers=header)
     text = response.content.decode('utf-8')
 
-    payload = get_hidden_items(text)
+    payload = _get_hidden_items(text)
     payload['username'] = username
     payload['password'] = password
     
@@ -69,7 +69,7 @@ def login(target, username, password, need_flag=None):
     response = session.post(url, headers=header, data=payload)
     
     if not response:
-        sys.stderr.write(bylogger.get_colorful_str("[ERROR] status code is %d\n" % response.status_code, "red"))
+        sys.stderr.write(logger.get_colorful_str("[ERROR] status code is %d\n" % response.status_code, "red"))
         if need_flag:
             session = [session, False]
         return session

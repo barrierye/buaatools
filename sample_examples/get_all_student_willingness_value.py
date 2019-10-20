@@ -4,31 +4,7 @@
 import time
 
 import config
-from buaatools.spider import bylogin, bycourse
-
-def get_willingness_list(username, password, student_numbers):
-    ''' student_numbers: ['SY1906000', 'SY1906001', ...] '''
-    session = bylogin.login(target='http://gsmis.buaa.edu.cn/',
-                            username=username,
-                            password=password)
-    course_willingness = {}
-    for xh in student_numbers:
-        print("query xh[%s]..." % xh)
-        courses = bycourse.query_course_by_xh(stage='preparatory', xh=xh, session=session)
-        courses_id_set = set()
-        for course in courses:
-            key = "%s(%s)" % (course['name'], course['course_id'])
-            
-            if key in courses_id_set:
-                continue
-            courses_id_set.add(key)
-
-            if key in course_willingness:
-                course_willingness[key].append(int(course['willingness_value']))
-            else:
-                course_willingness[key] = [int(course['willingness_value'])]
-        time.sleep(2)
-    return course_willingness
+from buaatools.spider import login, course
 
 def write_willingness_file(course_willingness, filename):
     with open(filename, 'w') as f:
@@ -49,9 +25,9 @@ def read_willingness_file(filename):
     return course_willingness
 
 def query_my_willingness_rank(username, password, xh, willingness_value_list):
-    session = bylogin.login(target='http://gsmis.buaa.edu.cn/',
-                            username=username, password=password)
-    courses = bycourse.query_course_by_xh(stage='preparatory', xh=xh, session=session)
+    session = login.login(target='http://gsmis.buaa.edu.cn/',
+                          username=username, password=password)
+    courses = course.query_course_by_xh(stage='preparatory', xh=xh, session=session)
     course_id_set = set()
     for course in courses:
         key = "%s(%s)" % (course['name'], course['course_id'])
@@ -70,9 +46,9 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list):
 
 if __name__ == '__main__':
     STUDENT_NUMBERS = ['SY1906000', 'SY1906001']
-    willingness_value_list = get_willingness_list(config.USERNAME,
-                                                  config.PASSWORD,
-                                                  STUDENT_NUMBERS)
+    willingness_value_list = course.get_willingness_list(username=config.USERNAME,
+                                                         password=config.PASSWORD,
+                                                         student_numbers=STUDENT_NUMBERS)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
     #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
     query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list)
