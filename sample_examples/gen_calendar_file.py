@@ -10,7 +10,8 @@ if __name__ == '__main__':
                                             xh=config.XH,
                                             username=config.USERNAME,
                                             password=config.PASSWORD,
-                                            debug=False)
+                                            debug=False,
+                                            vpn=True)
     if courses_obj:
         courses_obj.gen_ics_file(classbreak=config.CLASSBREAK,
                                  filename='curriculum.ics')

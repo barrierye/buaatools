@@ -11,7 +11,7 @@ setup(
     name = 'buaatools',
     version = __version__,
     description = 'Python library for BUAA tools',
-    url = 'https://github.com/barrierye/BUAA-Tools',
+    url = 'https://github.com/barrierye/buaatools',
     keywords = 'buaa buaatools',
     
     author = 'barriery',

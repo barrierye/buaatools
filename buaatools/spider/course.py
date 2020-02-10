@@ -39,7 +39,10 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
             sys.stderr.write(logger.get_colorful_str("[ERROR] username or password is None", "red"))
             return None
         if vpn:
-            session, success = login.login_with_vpn(target=HOME_WITH_VPN, username=username, password=password, need_flag=True)
+            session, success = login.login_with_vpn(target='https://gsmis.e.buaa.edu.cn:443',
+                                                    username=username, 
+                                                    password=password, 
+                                                    need_flag=True)
         else:
             session, success = login.login(target=HOME, username=username, password=password, need_flag=True)
         if not success:

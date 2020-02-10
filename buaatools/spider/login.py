@@ -46,6 +46,8 @@ def login_with_vpn(target, username, password, need_flag=None):
         if need_flag:
             session = [session, False]
         return session
+    if need_flag:
+        session = [session, True]
     return session
 
 def login(target, username, password, need_flag=None):
