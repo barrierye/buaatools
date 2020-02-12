@@ -28,32 +28,30 @@ def read_willingness_file(filename):
             course_willingness[key] = willingness_list
     return course_willingness
 
-def query_my_willingness_rank(username, password, xh, willingness_value_list):
-    session = login.login(target='http://gsmis.buaa.edu.cn/',
-                          username=username, password=password)
-    courses = course.query_course_by_xh(stage='preparatory', xh=xh, session=session)
+def query_my_willingness_rank(username, password, xh, willingness_value_list, vpn=False):
+    session = login.login(target='https://gsmis.e.buaa.edu.cn:443',
+                          username=username, password=password, vpn=vpn)
+    courses = course.query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
     course_id_set = set()
-    for course in courses:
-        key = "%s(%s)" % (course['name'], course['course_id'])
+    for c in courses:
+        key = "%s(%s)" % (c['name'], c['course_id'])
         if key in course_id_set:
             continue
         course_id_set.add(key)
-        print("%s [%s] <Number of students with the same willingness as you>:" % (key, course['willingness_value']))
         willingness_list = willingness_value_list[key]
-        willingness_list.reverse()
+        tmp = []
         for i, v in enumerate(willingness_list):
-            if v <= int(course['willingness_value']):
-                print("%d" % i)
-                if v < int(course['willingness_value']):
-                    break
-        print("------------------------------------------")
+            if v > int(c['willingness_value']):
+                tmp.append(int(c['willingness_value']))
+        print(f"{key} [{c['willingness_value']}] <Number of students with the same willingness as you>: {len(tmp)}")
+        print(tmp)
 
 if __name__ == '__main__':
-    STUDENT_NUMBERS = ['SY1906117', 'SY1906118']
-    willingness_value_list = course.get_willingness_list(username=config.USERNAME,
-                                                         password=config.PASSWORD,
+    vpn = True
+    STUDENT_NUMBERS = ['SY1906101', 'SY1906102', 'SY1906117', 'SY1906118']
+    willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
                                                          student_numbers=STUDENT_NUMBERS,
-                                                         vpn=True)
+                                                         interval=1, vpn=vpn)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
     #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
-    #  query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list)
+    #  query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=vpn)

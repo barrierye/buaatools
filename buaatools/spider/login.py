@@ -26,8 +26,7 @@ def login(target, username, password, vpn=False, need_flag=None):
         support_target_set = ['http://gsmis.buaa.edu.cn/']
         if (target not in support_target_set):
             _LOGGER.error(f'the target({target}) is not supported.')
-            if need_flag:
-                session = [session, False]
+            session = [session, False] if need_flag else session
             return session
 
         header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
@@ -44,23 +43,20 @@ def login(target, username, password, vpn=False, need_flag=None):
         _LOGGER.info(f'status code: {response.status_code}')
         if not response:
             _LOGGER.error(f'status code: {response.status}')
-            if need_flag:
-                session = [session, False]
+            _LOGGER.debug(response.content.decode('utf-8'))
+            session = [session, False] if need_flag else session
             return session
 
         #TODO: check if login successful
 
-        if need_flag:
-            session = [session, True]
-
+        session = [session, True] if need_flag else session
         return session
     else:
         session = requests.Session()
         support_target_set = ['https://gsmis.e.buaa.edu.cn:443']
         if (target not in support_target_set):
             _LOGGER.error(f'the target({target}) is not supported.')
-            if need_flag:
-                session = [session, False]
+            session = [session, False] if need_flag else session
             return session
 
         header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
@@ -79,10 +75,10 @@ def login(target, username, password, vpn=False, need_flag=None):
         _LOGGER.info(f'status code: {response.status_code}')
         if not response:
             _LOGGER.error(f'status code: {response.status_code}')
-            if need_flag:
-                session = [session, False]
+            _LOGGER.debug(response.content.decode('utf-8'))
+            session = [session, False] if need_flag else session
             return session
-        if need_flag:
-            session = [session, True]
+        
+        session = [session, True] if need_flag else session
         return session
 

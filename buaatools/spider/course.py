@@ -150,7 +150,7 @@ class Courses(list):
                                        (19, 50), (20, 40), (21, 30)]
         self.BEGIN_DATE = begin_date
         self.CLASS_PERIOD_BEGIN_TIME = class_period_begin_time.copy()
-        _LOGGER.info('BEGIN_DATE: %s' % self.BEGIN_DATE.strftime('%Y-%m-%d'))
+        _LOGGER.debug('BEGIN_DATE: %s' % self.BEGIN_DATE.strftime('%Y-%m-%d'))
             
     def set_begin_date(self, begin_date):
         self.BEGIN_DATE = begin_date
