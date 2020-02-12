@@ -47,11 +47,15 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list, vp
         print(tmp)
 
 if __name__ == '__main__':
-    vpn = True
-    STUDENT_NUMBERS = ['SY1906101', 'SY1906102', 'SY1906117', 'SY1906118']
+    VPN = True
+    STUDENT_NUMBERS = [] # ['SY1906101', 'SY1906102', 'SY1906117', 'SY1906118']
+    #  with open('全日制硕士收录记录.csv') as f:
+        #  for line in f:
+            #  xh = line.split(',')[2]
+            #  STUDENT_NUMBERS.append(xh)
     willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
                                                          student_numbers=STUDENT_NUMBERS,
-                                                         interval=1, vpn=vpn)
+                                                         interval=1, vpn=VPN)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
     #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
-    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=vpn)
+    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=VPN)

@@ -121,6 +121,9 @@ def get_willingness_list(username, password, student_numbers, interval=2, vpn=Fa
     for xh in student_numbers:
         _LOGGER.info(f'query xh[{xh}]...')
         courses = query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
+        if courses is None:
+            _LOGGER.warn(f'xh[{xh}] lookup failed.')
+            continue
         courses_id_set = set()
         for course in courses:
             key = "%s(%s)" % (course['name'], course['course_id'])
