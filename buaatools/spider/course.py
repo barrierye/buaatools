@@ -187,7 +187,7 @@ class Courses(list):
                   + ' You have filled all the credits in %s, but there are some items not finished.'%request_key)
             return False
 
-    def check_request_credit(self, student_type, total_request_credit_dict):
+    def check_request_credit(self, student_type, total_request_credit_dict, previous_finished_credit_list=None):
         ''' check request credit '''
         if not total_request_credit_dict.get(student_type):
             print('Miss %s in REQUEST_CREDIT.' % student_type)
@@ -195,6 +195,9 @@ class Courses(list):
         course_set = set()
         for course in self:
             course_set.add((course['course_id'], int(course['credit'])))
+        if previous_finished_credit_list is not None:
+            for course in previous_finished_credit_list:
+                course_set.add((course['course_id'], int(course['credit'])))
         for course in course_set:
             self.__check_course(student_type, total_request_credit_dict[student_type], course)
         self.__print_info(student_type, total_request_credit_dict[student_type], 0)
