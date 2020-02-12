@@ -6,12 +6,13 @@ This module is used to simulate the page for the course selection and get thml t
 """
 
 import re
+import sys
+import logging
 import requests
 
-import sys
-from buaatools.helper import logger
-
 __all__ = ['login', 'login_with_vpn']
+
+_LOGGER = logging.getLogger(__name__)
 
 def _get_hidden_items(text):
     ''' get hidden item of html text '''
@@ -23,7 +24,7 @@ def login_with_vpn(target, username, password, need_flag=None):
     session = requests.Session()
     support_target_set = ['https://gsmis.e.buaa.edu.cn:443']
     if (target not in support_target_set):
-        sys.stderr.write(logger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
+        _LOGGER.error(f'the target({target}) is not supported.')
         if need_flag:
             session = [session, False]
         return session
@@ -41,8 +42,9 @@ def login_with_vpn(target, username, password, need_flag=None):
 
     response = session.get(target)
 
+    _LOGGER.info(f'status code: {response.status_code}')
     if not response:
-        sys.stderr.write("[ERROR] status code is %d\n" % response.status_code)
+        _LOGGER.error(f'status code: {response.status_code}')
         if need_flag:
             session = [session, False]
         return session
@@ -54,7 +56,7 @@ def login(target, username, password, need_flag=None):
     session = requests.Session()
     support_target_set = ['http://gsmis.buaa.edu.cn/']
     if (target not in support_target_set):
-        sys.stderr.write(logger.get_colorful_str("[ERROR] the target(%s) is not supported.\n" % target, "red"))
+        _LOGGER.error(f'the target({target}) is not supported.')
         if need_flag:
             session = [session, False]
         return session
@@ -70,8 +72,9 @@ def login(target, username, password, need_flag=None):
     url = 'https://sso.buaa.edu.cn/login?service=' + target
     response = session.post(url, headers=header, data=payload)
     
+    _LOGGER.info(f'status code: {response.status_code}')
     if not response:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] status code is %d\n" % response.status_code, "red"))
+        _LOGGER.error(f'status code: {response.status}')
         if need_flag:
             session = [session, False]
         return session

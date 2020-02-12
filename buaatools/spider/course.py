@@ -7,6 +7,7 @@ This module is used to simulate the page for the course selection and get thml t
 
 import re
 import sys
+import logging
 import hashlib
 import requests
 import datetime
@@ -19,16 +20,22 @@ from buaatools.spider import login
 
 __all__ = ['query_course_by_xh', 'get_willingness_list']
 
+_LOGGER = logging.getLogger(__name__)
+
 HOME = 'http://gsmis.buaa.edu.cn/'
 HOME_WITH_VPN = 'https://gsmis.e.buaa.edu.cn/'
 
-def query_course_by_xh(stage, xh, username=None, password=None, session=None, debug=False, vpn=False):
+def query_course_by_xh(stage, xh, username=None, password=None, session=None,
+        begin_date=None, class_period_begin_time=None, vpn=False):
     stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
                   'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses',
                   'ending': 'api/tuiXuanKeApiController.do?getDropCourses'}
+    _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
+    
     if stage not in stage_list:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] stage(%s) not in-built"%stage, "red"))
+        _LOGGER.error(f'stage({stage}) not in-built.')
         return None
+
     if vpn:
         url = HOME_WITH_VPN + stage_list[stage]
     else:
@@ -36,7 +43,7 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
 
     if session is None:
         if username is None or password is None:
-            sys.stderr.write(logger.get_colorful_str("[ERROR] username or password is None", "red"))
+            _LOGGER.error('username or password is None.')
             return None
         if vpn:
             session, success = login.login_with_vpn(target='https://gsmis.e.buaa.edu.cn:443',
@@ -46,8 +53,9 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
         else:
             session, success = login.login(target=HOME, username=username, password=password, need_flag=True)
         if not success:
-            sys.stderr.write(logger.get_colorful_str("[ERROR] Failed to login.\n", "red"))
+            _LOGGER.error('Failed to login.')
             return None
+        _LOGGER.info('login success.')
     
     # here is a stupid authenticate, you can query any info by using different xh after login.
     magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
@@ -56,30 +64,27 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
     response = session.post(url, data=payload)
 
     if response.json().get('success') is False:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] Failed('success': False).\n", "red"))
-        if debug:
-            sys.stderr.write(response.content.decode('utf-8'))
+        _LOGGER.error("Failed('success': False)")
+        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     if response.json().get('msg') == '此学生还没有添加预选课程':
-        sys.stderr.write(logger.get_colorful_str("[ERROR] Failed('msg': '此学生还没有添加预选课程').\n", "red"))
-        if debug:
-            sys.stderr.write(response.content.decode('utf-8'))
+        _LOGGER.error("Failed('msg': '此学生还没有添加预选课程').")
+        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     if response.json().get('msg') == '此学生还没有退选课程':
-        sys.stderr.write(logger.get_colorful_str("[ERROR] Failed('msg': '此学生还没有退选课程').\n", "red"))
-        if debug:
-            sys.stderr.write(response.content.decode('utf-8'))
+        _LOGGER.error("Failed('msg': '此学生还没有退选课程').")
+        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     
     attributes = response.json().get('attributes')
     if not attributes:
-        sys.stderr.write(logger.get_colorful_str("[ERROR] Failed to get course list. Maybe the student id not in this system.\n", "red"))
-        if debug:
-            sys.stderr.write(response.content.decode('utf-8'))
+        _LOGGER.error("Failed to get course list. Maybe the student id not in this system.")
+        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     selected_courses = attributes.get('kclb')
     
-    course_list = Courses()
+    course_list = Courses(begin_date=begin_date,
+                          class_period_begin_time=class_period_begin_time)
     key_map = {'rklsgzzh': 'teacher',
                'kcmc': 'name',
                'qszc': 'week_begin',
@@ -96,6 +101,7 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None, de
         course = {human_firendly_key: item[magic_key] \
                 for magic_key, human_firendly_key in key_map.items()}
         course_list.append(course)
+        _LOGGER.info('add course(%s)' % ', '.join([course[k] for k in ['name', 'course_id', 'credit']]))
     return course_list
 
 def get_willingness_list(username, password, student_numbers, interval=2):
@@ -105,7 +111,7 @@ def get_willingness_list(username, password, student_numbers, interval=2):
                           password=password)
     course_willingness = {}
     for xh in student_numbers:
-        print("query xh[%s]..." % xh)
+        _LOGGER.info(f'query xh[{xh}]...')
         courses = bycourse.query_course_by_xh(stage='preparatory', xh=xh, session=session)
         courses_id_set = set()
         for course in courses:
@@ -123,15 +129,21 @@ def get_willingness_list(username, password, student_numbers, interval=2):
     return course_willingness
 
 class Courses(list):
-    # 开学第0周日期
-    BEGIN_DATE = datetime.datetime(2019, 8, 26, 0, 0, 0, tzinfo=pytz.timezone("Asia/Shanghai"))
-    # 一天各节课开始时间
-    CLASS_PERIOD_BEGIN_TIME = [(0, 0), (8, 0), (8, 50), \
-                               (9, 50), (10, 40), (11, 30), \
-                               (14, 00), (14, 50), (15, 50), \
-                               (16, 40), (17, 30), (19, 0), \
-                               (19, 50), (20, 40), (21, 30)]
-    
+    def __init__(self, begin_date=None, class_period_begin_time=None):
+        # 开学第0周日期
+        if begin_date is None:
+            begin_date = datetime.datetime(2019, 8, 26, 0, 0, 0, tzinfo=pytz.timezone("Asia/Shanghai"))
+        # 每节课时间
+        if class_period_begin_time is None:
+            class_period_begin_time = [(0, 0), (8, 0), (8, 50), \
+                                       (9, 50), (10, 40), (11, 30), \
+                                       (14, 00), (14, 50), (15, 50), \
+                                       (16, 40), (17, 30), (19, 0), \
+                                       (19, 50), (20, 40), (21, 30)]
+        self.BEGIN_DATE = begin_date
+        self.CLASS_PERIOD_BEGIN_TIME = class_period_begin_time.copy()
+        _LOGGER.info('BEGIN_DATE: %s' % self.BEGIN_DATE.strftime('%Y-%m-%d'))
+            
     def set_begin_date(self, begin_date):
         self.BEGIN_DATE = begin_date
     
@@ -155,7 +167,7 @@ class Courses(list):
             request_value['total'] -= total_credit
             return total_credit
         else:
-            print(logger.get_colorful_str('[ERROR]', 'red') + ' error type.')
+            _LOGGER.critical('error type')
             exit(1)
 
     def __print_info(self, request_key, request_value, loop_deep):
@@ -190,7 +202,7 @@ class Courses(list):
     def check_request_credit(self, student_type, total_request_credit_dict, previous_finished_credit_list=None):
         ''' check request credit '''
         if not total_request_credit_dict.get(student_type):
-            print('Miss %s in REQUEST_CREDIT.' % student_type)
+            _LOGGER.error(f'Miss {student_type} in REQUEST_CREDIT.')
             return
         course_set = set()
         for course in self:

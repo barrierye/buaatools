@@ -4,12 +4,9 @@
 import re
 from setuptools import setup, find_packages
 
-with open('buaatools/version.py') as f:
-    exec(f.read())
-
 setup(
     name = 'buaatools',
-    version = __version__,
+    version = '0.0.1',
     description = 'Python library for BUAA tools',
     url = 'https://github.com/barrierye/buaatools',
     keywords = 'buaa buaatools',
