@@ -53,14 +53,16 @@ def login(target, username, password, vpn=False, need_flag=None):
         return session
     else:
         session = requests.Session()
-        support_target_set = ['https://gsmis.e.buaa.edu.cn:443']
+        support_target_set = ['https://gsmis.e.buaa.edu.cn:443', 'https://gsmis.e2.buaa.edu.cn:443']
         if (target not in support_target_set):
             _LOGGER.error(f'the target({target}) is not supported.')
             session = [session, False] if need_flag else session
             return session
 
         header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
-        url = 'https://e.buaa.edu.cn/users/sign_in'
+        url = 'https://e2.buaa.edu.cn/users/sign_in'
+        #  url = 'https://e.buaa.edu.cn/users/sign_in'
+
         response = session.get(url, headers=header)
         text = response.content.decode('utf-8')
 

@@ -29,7 +29,7 @@ def read_willingness_file(filename):
     return course_willingness
 
 def query_my_willingness_rank(username, password, xh, willingness_value_list, vpn=False):
-    session = login.login(target='https://gsmis.e.buaa.edu.cn:443',
+    session = login.login(target='https://gsmis.e2.buaa.edu.cn:443',
                           username=username, password=password, vpn=vpn)
     courses = course.query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
     course_id_set = set()
@@ -41,21 +41,20 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list, vp
         willingness_list = willingness_value_list[key]
         tmp = []
         for i, v in enumerate(willingness_list):
-            if v > int(c['willingness_value']):
+            if v >= int(c['willingness_value']):
                 tmp.append(int(c['willingness_value']))
-        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with higher willingness than you>: {len(tmp)}")
+        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>: {len(tmp)}")
         print(tmp)
 
 if __name__ == '__main__':
     VPN = True
     STUDENT_NUMBERS = [] # ['SY1906101', 'SY1906102', 'SY1906117', 'SY1906118']
-    #  with open('全日制硕士收录记录.csv') as f:
-        #  for line in f:
-            #  xh = line.split(',')[2]
-            #  STUDENT_NUMBERS.append(xh)
+    with open('全日制硕士收录记录.csv') as f:
+        for line in f:
+            xh = line.split(',')[2]
+            STUDENT_NUMBERS.append(xh)
     willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
                                                          student_numbers=STUDENT_NUMBERS,
                                                          interval=1, vpn=VPN)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
-    #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
     query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=VPN)

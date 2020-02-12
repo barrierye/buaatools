@@ -24,12 +24,14 @@ __all__ = ['query_course_by_xh', 'get_willingness_list']
 _LOGGER = logging.getLogger(__name__)
 
 LOGIN = {
-    'vpn': 'https://gsmis.e.buaa.edu.cn:443',
+    'vpn': 'https://gsmis.e2.buaa.edu.cn:443',
+    #  'vpn': 'https://gsmis.e.buaa.edu.cn:443',
     'normal': 'http://gsmis.buaa.edu.cn/',
 }
 
 HOME = {
-    'vpn': 'https://gsmis.e.buaa.edu.cn/',
+    'vpn': 'https://gsmis.e2.buaa.edu.cn/',
+    #  'vpn': 'https://gsmis.e.buaa.edu.cn/',
     'normal': 'http://gsmis.buaa.edu.cn/',
 }
 
@@ -60,21 +62,19 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
     # here is a stupid authenticate, you can query any info by using different xh after login.
     magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
     session.headers['X-BUAA-SIGN'] = hashlib.md5(magic_string.encode()).hexdigest().upper()
+    _LOGGER.debug(f"X-BUAA-SIGN: {session.headers['X-BUAA-SIGN']}")
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
 
     _LOGGER.debug(response.content.decode('utf-8'))
     if response.json().get('success') is False:
         _LOGGER.error("Failed('success': False)")
-        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     if response.json().get('msg') == '此学生还没有添加预选课程':
         _LOGGER.error("Failed('msg': '此学生还没有添加预选课程').")
-        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     if response.json().get('msg') == '此学生还没有退选课程':
         _LOGGER.error("Failed('msg': '此学生还没有退选课程').")
-        _LOGGER.debug(response.content.decode('utf-8'))
         return []
     
     attributes = response.json().get('attributes')
@@ -121,7 +121,7 @@ def get_willingness_list(username, password, student_numbers, interval=2, vpn=Fa
     for xh in student_numbers:
         _LOGGER.info(f'query xh[{xh}]...')
         courses = query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
-        if courses is None:
+        if not courses:
             _LOGGER.warn(f'xh[{xh}] lookup failed.')
             continue
         courses_id_set = set()
