@@ -2,9 +2,13 @@
 # Copyright (c) 2019 barriery
 # Python release: 3.7.4
 import time
+import logging
 
 import config
 from buaatools.spider import login, course
+
+logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
+        datefmt='%Y-%m-%d %H:%M', level=logging.INFO)
 
 def write_willingness_file(course_willingness, filename):
     with open(filename, 'w') as f:
@@ -45,10 +49,11 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list):
         print("------------------------------------------")
 
 if __name__ == '__main__':
-    STUDENT_NUMBERS = ['SY1906000', 'SY1906001']
+    STUDENT_NUMBERS = ['SY1906117', 'SY1906118']
     willingness_value_list = course.get_willingness_list(username=config.USERNAME,
                                                          password=config.PASSWORD,
-                                                         student_numbers=STUDENT_NUMBERS)
+                                                         student_numbers=STUDENT_NUMBERS,
+                                                         vpn=True)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
     #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
-    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list)
+    #  query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list)

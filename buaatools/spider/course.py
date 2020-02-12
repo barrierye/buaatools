@@ -7,6 +7,7 @@ This module is used to simulate the page for the course selection and get thml t
 
 import re
 import sys
+import time
 import logging
 import hashlib
 import requests
@@ -22,8 +23,15 @@ __all__ = ['query_course_by_xh', 'get_willingness_list']
 
 _LOGGER = logging.getLogger(__name__)
 
-HOME = 'http://gsmis.buaa.edu.cn/'
-HOME_WITH_VPN = 'https://gsmis.e.buaa.edu.cn/'
+LOGIN = {
+    'vpn': 'https://gsmis.e.buaa.edu.cn:443',
+    'normal': 'http://gsmis.buaa.edu.cn/',
+}
+
+HOME = {
+    'vpn': 'https://gsmis.e.buaa.edu.cn/',
+    'normal': 'http://gsmis.buaa.edu.cn/',
+}
 
 def query_course_by_xh(stage, xh, username=None, password=None, session=None,
         begin_date=None, class_period_begin_time=None, vpn=False):
@@ -36,22 +44,14 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
         _LOGGER.error(f'stage({stage}) not in-built.')
         return None
 
-    if vpn:
-        url = HOME_WITH_VPN + stage_list[stage]
-    else:
-        url = HOME + stage_list[stage]
+    opt = 'vpn' if vpn else 'normal'
+    url = HOME[opt] + stage_list[stage]
 
     if session is None:
         if username is None or password is None:
             _LOGGER.error('username or password is None.')
             return None
-        if vpn:
-            session, success = login.login_with_vpn(target='https://gsmis.e.buaa.edu.cn:443',
-                                                    username=username, 
-                                                    password=password, 
-                                                    need_flag=True)
-        else:
-            session, success = login.login(target=HOME, username=username, password=password, need_flag=True)
+        session, success = login.login(target=LOGIN[opt], username=username, password=password, need_flag=True, vpn=vpn)
         if not success:
             _LOGGER.error('Failed to login.')
             return None
@@ -63,6 +63,7 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
 
+    _LOGGER.debug(response.content.decode('utf-8'))
     if response.json().get('success') is False:
         _LOGGER.error("Failed('success': False)")
         _LOGGER.debug(response.content.decode('utf-8'))
@@ -104,15 +105,22 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
         _LOGGER.info('add course(%s)' % ', '.join([course[k] for k in ['name', 'course_id', 'credit']]))
     return course_list
 
-def get_willingness_list(username, password, student_numbers, interval=2):
+def get_willingness_list(username, password, student_numbers, interval=2, vpn=False):
     ''' student_numbers: ['SY1906000', 'SY1906001', ...] '''
-    session = login.login(target='http://gsmis.buaa.edu.cn/',
-                          username=username,
-                          password=password)
+    opt = 'vpn' if vpn else 'normal'
+    session, success = login.login(target=LOGIN[opt],
+                                   username=username,
+                                   password=password,
+                                   need_flag=True,
+                                   vpn=vpn)
+    if not success:
+        _LOGGER.error('Failed to login.')
+        return None
+    _LOGGER.info('login success.')
     course_willingness = {}
     for xh in student_numbers:
         _LOGGER.info(f'query xh[{xh}]...')
-        courses = bycourse.query_course_by_xh(stage='preparatory', xh=xh, session=session)
+        courses = query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
         courses_id_set = set()
         for course in courses:
             key = "%s(%s)" % (course['name'], course['course_id'])

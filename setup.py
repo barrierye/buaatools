@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'buaatools',
-    version = '0.0.1',
+    version = '0.0.2',
     description = 'Python library for BUAA tools',
     url = 'https://github.com/barrierye/buaatools',
     keywords = 'buaa buaatools',

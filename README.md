@@ -17,7 +17,7 @@
 
 ```bash
 python setup.py bdist_wheel
-pip install dist/buaatools-0.0.1-py3-none-any.whl
+pip install dist/buaatools-0.0.2-py3-none-any.whl
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ username = 'username'
 password = 'password'
 xh = 'SY1906123'
 # 校外登陆校内网站
-session = login.login_with_vpn(target=target, username=username, password=password)
+session = login.login(target=target, username=username, password=password, vpn=True)
 # 获取当前学号的选课信息
 courses = course.query_course_by_xh(stage='ending', xh=xh, session=session, vpn=True)
 if courses:
