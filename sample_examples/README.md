@@ -12,14 +12,18 @@ PASSWORD = '***********'
 # 学号
 XH = 'SY1906***'
 
-# 选课时期（目前只实现了预选课，挑选课阶段） ['preparatory', 'adjustment']
-STAGE = 'adjustment'
+# 本学期第零周的开始日期
+BEGIN_DATE = datetime.datetime(2020, 2, 17, 0, 0, 0, tzinfo=pytz.timezone("Asia/Shanghai"))
+# 选课时期（预选课阶段，调选课阶段，结束选课阶段） ['preparatory', 'adjustment', 'ending']
+STAGE = 'preparatory'
 # 是否显示课间休息
 CLASSBREAK  = True
-# （可选）学生类型，用于检查剩余学分要求。内置'软件工程（硕士）', '计算机科学与技术（硕士）', '计算机技术（全日制专硕）'三种培养方案。
+# （可选，此项是为了学分检查）学生类型，用于检查剩余学分要求。内置'软件工程（硕士）', '计算机科学与技术（硕士）', '计算机技术（全日制专硕）'三种培养方案。
 STUDENT_TYPE = '软件工程（硕士）'
-# 培养方案设置。可以按照所给的三种培养方案自行添加，各个类目可以嵌套，必须包含'total'字段表示该类目所需的最低学分要求
+# （可选，此项是为了学分检查）培养方案设置。可以按照所给的三种培养方案自行添加，各个类目可以嵌套，必须包含'total'字段表示该类目所需的最低学分要求
 REQUEST_CREDIT = {...}
+# （可选，此项是为了学分检查）已修学分
+PREVIOUS_FINISHED_CREDIT_LIST = [...]
 ```
 
 ## gen_calendar_file.py
