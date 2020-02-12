@@ -43,7 +43,7 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list, vp
         for i, v in enumerate(willingness_list):
             if v > int(c['willingness_value']):
                 tmp.append(int(c['willingness_value']))
-        print(f"{key} [{c['willingness_value']}] <Number of students with the same willingness as you>: {len(tmp)}")
+        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with higher willingness than you>: {len(tmp)}")
         print(tmp)
 
 if __name__ == '__main__':
@@ -54,4 +54,4 @@ if __name__ == '__main__':
                                                          interval=1, vpn=vpn)
     write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
     #  willingness_value_list = read_willingness_file('willingness_value_list.txt')
-    #  query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=vpn)
+    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=vpn)
