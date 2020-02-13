@@ -62,7 +62,6 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
     # here is a stupid authenticate, you can query any info by using different xh after login.
     magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
     session.headers['X-BUAA-SIGN'] = hashlib.md5(magic_string.encode()).hexdigest().upper()
-    _LOGGER.debug(f"X-BUAA-SIGN: {session.headers['X-BUAA-SIGN']}")
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
 
