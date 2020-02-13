@@ -65,15 +65,18 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
     payload = {'body': '{"xh":"%s"}'%xh}
     response = session.post(url, data=payload)
 
-    _LOGGER.debug(response.content.decode('utf-8'))
-    if response.json().get('success') is False:
-        _LOGGER.error("Failed('success': False)")
-        return []
-    if response.json().get('msg') == '此学生还没有添加预选课程':
-        _LOGGER.error("Failed('msg': '此学生还没有添加预选课程').")
-        return []
-    if response.json().get('msg') == '此学生还没有退选课程':
-        _LOGGER.error("Failed('msg': '此学生还没有退选课程').")
+    try:
+        if response.json().get('success') is False:
+            _LOGGER.error("Failed('success': False)")
+            return []
+        if response.json().get('msg') == '此学生还没有添加预选课程':
+            _LOGGER.error("Failed('msg': '此学生还没有添加预选课程').")
+            return []
+        if response.json().get('msg') == '此学生还没有退选课程':
+            _LOGGER.error("Failed('msg': '此学生还没有退选课程').")
+            return []
+    except:
+        _LOGGER.error(response.content.decode('utf-8'))
         return []
     
     attributes = response.json().get('attributes')
