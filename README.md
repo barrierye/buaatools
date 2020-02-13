@@ -25,7 +25,8 @@ pip install dist/buaatools-0.0.2-py3-none-any.whl
 ```python
 from buaatools.spider import login, course
 
-target = 'https://gsmis.e.buaa.edu.cn:443'
+target = 'https://gsmis.e2.buaa.edu.cn:443'
+# target = 'https://gsmis.e.buaa.edu.cn:443'
 username = 'username'
 password = 'password'
 xh = 'SY1906123'
