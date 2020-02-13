@@ -26,7 +26,7 @@ REQUEST_CREDIT = {...}
 PREVIOUS_FINISHED_CREDIT_LIST = [...]
 ```
 
-## gen_calendar_file.py
+## gen_calendar_file.py (线上试用: www.barriery.cn:5000)
 
 1. 修改`config.example.py`文件
 
