@@ -28,11 +28,13 @@ PREVIOUS_FINISHED_CREDIT_LIST = [...]
 
 ## gen_calendar_file.py (线上试用: www.barriery.cn:5000)
 
+生成课表日历文件。
+
 1. 修改`config.example.py`文件
 
-1. 运行`gen_ics_file.py`文件，文件夹内将生成.ICS文件`curriculum.ics`
+1. 运行`gen_calendar_file.py`文件，文件夹内将生成.ICS文件`curriculum.ics`
 
-2. 将`class_schedule.ics`文件导入到所需的日历应用中：
+2. 将`schedule.ics`文件导入到所需的日历应用中：
 
    - Google calendar
 
@@ -40,3 +42,14 @@ PREVIOUS_FINISHED_CREDIT_LIST = [...]
 
    - 其他日历应用
 
+## get_all_student_willingness_value.py
+
+获取给定学号列表同学的预选课意愿值（可以爬取全院同学意愿值，以便选到心仪的课）
+
+1. 修改`config.example.py`文件
+
+2. 设定学号列表
+
+3. run 运行结果如下：
+
+   ![运行结果](https://tva1.sinaimg.cn/large/0082zybply1gbw24h4338j30u011ak2h.jpg)
