@@ -40,21 +40,30 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list, vp
         course_id_set.add(key)
         willingness_list = willingness_value_list[key]
         tmp = []
-        for i, v in enumerate(willingness_list):
+        for v in willingness_list:
             if v >= int(c['willingness_value']):
-                tmp.append(int(c['willingness_value']))
+                tmp.append(v)
         print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>: {len(tmp)}")
         print(tmp)
 
-if __name__ == '__main__':
-    VPN = True
-    STUDENT_NUMBERS = [] # ['SY1906101', 'SY1906102', 'SY1906117', 'SY1906118']
+def get_student_numbers():
+    #  student_numbers = ['SY1906108', 'SY1906117', 'SY1906118']
+    student_numbers = []
     with open('全日制硕士收录记录.csv') as f:
         for line in f:
             xh = line.split(',')[2]
-            STUDENT_NUMBERS.append(xh)
-    willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
-                                                         student_numbers=STUDENT_NUMBERS,
-                                                         interval=1, vpn=VPN)
-    write_willingness_file(willingness_value_list, 'willingness_value_list.txt')
+            student_numbers.append(xh)
+    return student_numbers
+
+if __name__ == '__main__':
+    filename = 'willingness_value_list.txt'
+    mode = 'offline'
+    VPN = True
+    if mode == 'online':
+        willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
+                                                             student_numbers=get_student_numbers(),
+                                                             interval=1, vpn=VPN)
+        write_willingness_file(willingness_value_list, filename)
+    elif mode == 'offline':
+        willingness_value_list = read_willingness_file(filename)
     query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=VPN)
