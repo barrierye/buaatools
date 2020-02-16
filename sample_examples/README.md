@@ -52,4 +52,4 @@ PREVIOUS_FINISHED_CREDIT_LIST = [...]
 
 3. run 运行结果如下：
 
-   ![运行结果](https://tva1.sinaimg.cn/large/0082zybply1gbw24h4338j30u011ak2h.jpg)
+   ![运行结果](https://tva1.sinaimg.cn/large/0082zybply1gbycza7p6fj31ce0qkq8r.jpg)

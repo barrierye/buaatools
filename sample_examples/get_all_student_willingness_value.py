@@ -10,6 +10,8 @@ from buaatools.spider import login, course
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
         datefmt='%Y-%m-%d %H:%M', level=logging.INFO)
 
+_LOGGER = logging.getLogger(__name__)
+
 def write_willingness_file(course_willingness, filename):
     with open(filename, 'w') as f:
         for course, willingness_value_list in course_willingness.items():
@@ -59,6 +61,8 @@ if __name__ == '__main__':
     filename = 'willingness_value_list.txt'
     mode = 'offline'
     VPN = True
+    _LOGGER.info(f'mode: {mode}, vpn: {VPN}')
+    _LOGGER.info(f'filename: {filename}')
     if mode == 'online':
         willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
                                                              student_numbers=get_student_numbers(),
