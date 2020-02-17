@@ -31,22 +31,37 @@ def read_willingness_file(filename):
     return course_willingness
 
 def query_my_willingness_rank(username, password, xh, willingness_value_list, vpn=False):
-    session = login.login(target='https://gsmis.e2.buaa.edu.cn:443',
-                          username=username, password=password, vpn=vpn)
+    session, success = login.login(target='https://gsmis.e2.buaa.edu.cn:443',
+                          username=username, password=password, need_flag=True, vpn=vpn)
+    if not success:
+        return
+    
     courses = course.query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
+    if not courses:
+        return
+    
+    total_courses = course.query_courseSize_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
+    if not total_courses:
+        return
+    
+    courses_size = {"%s(%s)"%(c['name'], c['course_id']): int(c['course_size']) for c in total_courses}
+
     course_id_set = set()
     for c in courses:
         key = "%s(%s)" % (c['name'], c['course_id'])
         if key in course_id_set:
             continue
         course_id_set.add(key)
+        csize = courses_size[key]
         willingness_list = willingness_value_list[key]
         tmp = []
         for v in willingness_list:
             if v >= int(c['willingness_value']):
                 tmp.append(v)
-        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>: {len(tmp)}")
+        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>({len(tmp)}/{csize}):")
         print(tmp)
+        if len(tmp) > csize:
+            print(f"    WARN: You need to adjust your willingness or you won't be able to take the course. The recommended expectation is {tmp[-(csize-1)]}")
 
 def get_student_numbers():
     #  student_numbers = ['SY1906108', 'SY1906117', 'SY1906118']
@@ -60,14 +75,12 @@ def get_student_numbers():
 if __name__ == '__main__':
     filename = 'willingness_value_list.txt'
     mode = 'offline'
-    VPN = True
-    _LOGGER.info(f'mode: {mode}, vpn: {VPN}')
-    _LOGGER.info(f'filename: {filename}')
+    _LOGGER.info(f'mode: {mode}, filename: {filename}')
     if mode == 'online':
         willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
                                                              student_numbers=get_student_numbers(),
-                                                             interval=1, vpn=VPN)
+                                                             interval=1, vpn=config.VPN)
         write_willingness_file(willingness_value_list, filename)
     elif mode == 'offline':
         willingness_value_list = read_willingness_file(filename)
-    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=VPN)
+    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=config.VPN)

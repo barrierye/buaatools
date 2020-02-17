@@ -16,6 +16,8 @@ USERNAME = 'username'
 PASSWORD = 'password'
 # Student ID
 XH = 'SYxxxxxx'
+# VPN
+VPN = True
 
 
 ####################################

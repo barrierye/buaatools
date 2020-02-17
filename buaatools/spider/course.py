@@ -19,7 +19,11 @@ from icalendar import Calendar, Event
 from buaatools.helper import logger
 from buaatools.spider import login
 
-__all__ = ['query_course_by_xh', 'get_willingness_list']
+__all__ = ['get_response_by_xh',
+           'query_courseSize_by_xh',
+           'query_name_by_xh',
+           'query_course_by_xh',
+           'get_willingness_list']
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,50 +39,154 @@ HOME = {
     'normal': 'http://gsmis.buaa.edu.cn/',
 }
 
-def query_course_by_xh(stage, xh, username=None, password=None, session=None,
-        begin_date=None, class_period_begin_time=None, vpn=False):
-    stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
-                  'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses',
-                  'ending': 'api/tuiXuanKeApiController.do?getDropCourses'}
-    _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
-    
-    if stage not in stage_list:
-        _LOGGER.error(f'stage({stage}) not in-built.')
-        return None
+paramsTable = {
+    'api/xuankeApiController.do?gtasksList': 'body={"xh":"%s"}', # 'obj' -> [0] -> 'id_'(taskId)/'xklcqdszxxid'
+    'api/xuankeApiController.do?getUserListByXH': 'body={"xh":"%s"}', # 'obj' -> 'realname'
+    'api/xuankeApiController.do?getCalendarTime': 'body={"xh":"%s"}',
+    'api/xuankeApiController.do?getFlowChart': 'body={"xh":"%s","xklcqdszxxid":"%s"}',
+    'api/yuXuanKeApiController.do?pyfaFilter': 'body={"xh":"%s","taskId":"%s","xklcqdszxxid":"%s"}',
+    'api/xuankeApiController.do?checkXuanKeUser': 'body={"xh":"%s","taskId":"%s","xklcqdszxxid":"%s"}',
+    'api/dictionaries.do?getDictionaryData': 'body={"code":"ssxqhjd"}',
+    'api/yuXuanKeApiController.do?findKcxxList': 'body={"xh":"%s","pageSize":3000,"pageNum":1,"kcmc":"","xklcqdszxxid":"%s","biaoshi":"1","num":"1"}',
+    'api/yuXuanKeApiController.do?getSelectedCourses': 'body={"xh":"%s"}',
+    'api/yuXuaKeApiController.do?txSelectedCourses': 'body={"xh":"%s"}',
+    'api/tuiXuanKeApiController.do?getDropCourses': 'body={"xh":"%s"}',
+}
 
+def fill_params(params_string, xh, session, vpn=False):
+    _LOGGER.debug(f'params_string: {params_string}, xh: {xh}, vpn: {vpn}')
+    params_pattern = re.compile(r'"([^"]*?)":"%s"')
+    params = params_pattern.findall(params_string)
+    text = []
+    for param in params:
+        if param == 'xh':
+            text.append(xh)
+        elif param == 'xklcqdszxxid' or param == 'taskId':
+            response = get_response_by_xh('api/xuankeApiController.do?gtasksList', xh, session=session, vpn=vpn)
+            if not response:
+                return None
+            try:
+                obj = response.json().get('obj')[0]
+                text.append(obj.get(param))
+            except:
+                try:
+                    _LOGGER.error(response.json())
+                except:
+                    _LOGGER.error('can not parse response to json.')
+                exit(1)
+        else:
+            _LOGGER.error(f'error param: {param}')
+            exit(1)
+    return params_string % tuple(text)
+
+def get_response_by_xh(api, xh, username=None, password=None, session=None, vpn=False):
+    _LOGGER.info(f'api: {api}, vpn: {vpn}')
     opt = 'vpn' if vpn else 'normal'
-    url = HOME[opt] + stage_list[stage]
 
+    # login
     if session is None:
         if username is None or password is None:
             _LOGGER.error('username or password is None.')
-            return None
+            exit(1)
         session, success = login.login(target=LOGIN[opt], username=username, password=password, need_flag=True, vpn=vpn)
         if not success:
             _LOGGER.error('Failed to login.')
             return None
         _LOGGER.info('login success.')
     
+    url = HOME[opt] + api
     # here is a stupid authenticate, you can query any info by using different xh after login.
-    magic_string = '{body={"xh":"' + xh + '"}}&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
-    session.headers['X-BUAA-SIGN'] = hashlib.md5(magic_string.encode()).hexdigest().upper()
-    payload = {'body': '{"xh":"%s"}'%xh}
+    param_string = paramsTable[api]
+    _LOGGER.debug(f'param_string: {param_string}')
+    filled_params = fill_params(param_string, xh, session, vpn=vpn)
+    _LOGGER.debug(f'filled_params: {filled_params}')
+    salt_string = '&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
+    s = '{' + filled_params + '}' + salt_string
+    session.headers['X-BUAA-SIGN'] = hashlib.md5(s.encode()).hexdigest().upper()
+    payload = {'body': filled_params[5:]} # {'body': '{"xh":"%s"}'
+    _LOGGER.debug(f'payload: {payload}')
     response = session.post(url, data=payload)
+    if not response:
+        return None
 
     try:
         if response.json().get('success') is False:
-            _LOGGER.error("Failed('success': False)")
+            _LOGGER.error(f"Failed('success': False)")
             return []
-        if response.json().get('msg') == '此学生还没有添加预选课程':
-            _LOGGER.error("Failed('msg': '此学生还没有添加预选课程').")
-            return []
-        if response.json().get('msg') == '此学生还没有退选课程':
-            _LOGGER.error("Failed('msg': '此学生还没有退选课程').")
+        msg = response.json().get('msg')
+        if msg != '操作成功' and msg != '操作正常':
+            _LOGGER.error(f"Failed('msg': '{msg}').")
             return []
     except:
+        try:
+            _LOGGER.error(response.json())
+        except:
+            _LOGGER.error('can not parse response to json.')
         _LOGGER.error(response.content.decode('utf-8'))
         return []
     
+    return response
+
+def query_courseSize_by_xh(stage, xh, username=None, password=None, session=None, vpn=False):
+    stage_list = {'preparatory': 'api/yuXuanKeApiController.do?findKcxxList',}
+    _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
+    if stage not in stage_list:
+        _LOGGER.error('stage(%s) not in-built(%s).'
+                % (stage, ', '.join([x for x in stage_list])))
+        return None
+
+    response = get_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
+    if not response:
+        return None
+
+    attributes = response.json().get('attributes')
+    total_courses = attributes.get('kclb')
+    _LOGGER.info(f'total courses: {len(total_courses)}')
+
+    course_list = Courses()
+    key_map = {'kxrs': 'course_size',
+               'rklsgzzh': 'teacher',
+               'kcmc': 'name',
+               'kch': 'course_id',
+               'zxf': 'credit',
+               'id': 'id_in_system',}
+    for item in total_courses:
+        course = {human_firendly_key: item[magic_key] \
+                for magic_key, human_firendly_key in key_map.items()}
+        course_list.append(course)
+    return course_list
+
+def query_name_by_xh(stage, xh, username=None, password=None, session=None, vpn=False):
+    stage_list = {'preparatory': 'api/xuankeApiController.do?getUserListByXH',}
+    _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
+    if stage not in stage_list:
+        _LOGGER.error('stage(%s) not in-built(%s).'
+                % (stage, ', '.join([x for x in stage_list])))
+        return None
+    
+    response = get_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
+    if not response:
+        return None
+    
+    obj = response.json().get('obj')
+    realname = obj.get('realname')
+    
+    return realname
+
+def query_course_by_xh(stage, xh, username=None, password=None, session=None,
+        begin_date=None, class_period_begin_time=None, vpn=False):
+    stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
+                  'adjustment': 'api/yuXuaKeApiController.do?txSelectedCourses',
+                  'ending': 'api/tuiXuanKeApiController.do?getDropCourses'}
+    _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
+    if stage not in stage_list:
+        _LOGGER.error('stage(%s) not in-built(%s).'
+                % (stage, ', '.join([x for x in stage_list])))
+        return None
+    response = get_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
+    if not response:
+        return None
+
     attributes = response.json().get('attributes')
     if not attributes:
         _LOGGER.error("Failed to get course list. Maybe the student id not in this system.")

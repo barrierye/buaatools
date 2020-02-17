@@ -16,7 +16,8 @@ if __name__ == '__main__':
                                             username=config.USERNAME,
                                             password=config.PASSWORD,
                                             begin_date=config.BEGIN_DATE,
-                                            vpn=config.VPN)
+                                            vpn=True)
     if courses_obj:
-        courses_obj.gen_ics_file(classbreak=config.CLASSBREAK,
-                                 filename='curriculum.ics')
+        courses_obj.check_request_credit(student_type=config.STUDENT_TYPE,
+                                         total_request_credit_dict=config.REQUEST_CREDIT,
+                                         previous_finished_credit_list=config.PREVIOUS_FINISHED_CREDIT_LIST)
