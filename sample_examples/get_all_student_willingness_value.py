@@ -5,6 +5,7 @@ import time
 import logging
 
 import config
+from buaatools.helper import logger
 from buaatools.spider import login, course
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
@@ -60,8 +61,9 @@ def query_my_willingness_rank(username, password, xh, willingness_value_list, vp
                 tmp.append(v)
         print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>({len(tmp)}/{csize}):")
         print(tmp)
+        print(logger.get_colorful_str(f"INFO: The recommended expectation is {tmp[-(csize-1)]}", 'green'))
         if len(tmp) > csize:
-            print(f"    WARN: You need to adjust your willingness or you won't be able to take the course. The recommended expectation is {tmp[-(csize-1)]}")
+            print(logger.get_colorful_str("WARN: You need to adjust your willingness or you won't be able to take the course.", 'yellow'))
 
 def get_student_numbers():
     #  student_numbers = ['SY1906108', 'SY1906117', 'SY1906118']

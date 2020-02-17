@@ -11,6 +11,8 @@ USERNAME = 'barriery'
 PASSWORD = '***********'
 # 学号
 XH = 'SY1906***'
+# VPN
+VPN = True
 
 # 本学期第零周的开始日期
 BEGIN_DATE = datetime.datetime(2020, 2, 17, 0, 0, 0, tzinfo=pytz.timezone("Asia/Shanghai"))
@@ -26,9 +28,19 @@ REQUEST_CREDIT = {...}
 PREVIOUS_FINISHED_CREDIT_LIST = [...]
 ```
 
+## check_request_credit.py
+
+根据培养方案检查学分情况（非当前学期的课程需要在配置文件中设置）
+
+1. 修改`config.example.py`文件
+
+2. 运行`check_request_credit.py`文件：
+
+   ![运行结果](https://tva1.sinaimg.cn/large/0082zybply1gbzmge6ji9j31b00osdkw.jpg)
+
 ## gen_calendar_file.py (线上试用: www.barriery.cn:5000)
 
-生成课表日历文件。
+ 通过学号获取选课信息，并生成.ICS文件。可以导入到Google calendar，iCal以及其他一些主流日历应用。
 
 1. 修改`config.example.py`文件
 
@@ -44,12 +56,20 @@ PREVIOUS_FINISHED_CREDIT_LIST = [...]
 
 ## get_all_student_willingness_value.py
 
-获取给定学号列表同学的预选课意愿值（可以爬取全院同学意愿值，以便选到心仪的课）
+在预选课阶段）通过学号列表获取选课意愿值，并列出自己意愿值的在所选课中的排名。如果提供本系所有人的学号，在预选课阶段更合理地安排意愿值，程序会根据课程容量给出建议的意愿值。
 
 1. 修改`config.example.py`文件
 
 2. 设定学号列表
 
-3. run 运行结果如下：
+3. 运行`get_all_student_willingness_value.py`文件：
 
-   ![运行结果](https://tva1.sinaimg.cn/large/0082zybply1gbycza7p6fj31ce0qkq8r.jpg)
+   ![运行结果](https://tva1.sinaimg.cn/large/0082zybply1gbzkq1h4bxj31cs0u045v.jpg)
+
+## get_name_by_xh.py
+
+通过学号获取姓名。
+
+1. 修改`config.example.py`文件
+
+2. 运行`get_name_by_xh.py`文件

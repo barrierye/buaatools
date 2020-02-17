@@ -59,8 +59,10 @@ def fill_params(params_string, xh, session, vpn=False):
     params = params_pattern.findall(params_string)
     text = []
     for param in params:
+        _LOGGER.debug(f'query param: {param}')
         if param == 'xh':
             text.append(xh)
+            _LOGGER.debug(f'find param: {param}({xh})')
         elif param == 'xklcqdszxxid' or param == 'taskId':
             response = get_response_by_xh('api/xuankeApiController.do?gtasksList', xh, session=session, vpn=vpn)
             if not response:
@@ -68,6 +70,7 @@ def fill_params(params_string, xh, session, vpn=False):
             try:
                 obj = response.json().get('obj')[0]
                 text.append(obj.get(param))
+                _LOGGER.debug(f'find param: {param}({obj.get(param)})')
             except:
                 try:
                     _LOGGER.error(response.json())
@@ -97,7 +100,6 @@ def get_response_by_xh(api, xh, username=None, password=None, session=None, vpn=
     url = HOME[opt] + api
     # here is a stupid authenticate, you can query any info by using different xh after login.
     param_string = paramsTable[api]
-    _LOGGER.debug(f'param_string: {param_string}')
     filled_params = fill_params(param_string, xh, session, vpn=vpn)
     _LOGGER.debug(f'filled_params: {filled_params}')
     salt_string = '&key=53C2780372E847AEDB1726F136F7BD79CE12B6CA919B6CF4'
