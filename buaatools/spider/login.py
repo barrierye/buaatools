@@ -7,6 +7,7 @@ This module is used to simulate the page for the course selection and get thml t
 
 import re
 import sys
+import time
 import random
 import logging
 import requests
@@ -72,8 +73,26 @@ def login(target, username, password, vpn=False, need_flag=None):
             session = [session, False] if need_flag else session
             return session
 
-        #TODO: check if login successful
+        # TODO: check if login success
+        '''
+        if '请输入您的密码' in response.content.decode('utf-8'):
+            _LOGGER.info('fail to login, try to login again.')
+            url = 'https://sso.buaa.edu.cn/login?service=https://gsmis.buaa.edu.cn/'
+            response = session.get(url, headers=header)
+            jsessionid = response.cookies['JSESSIONID']
+            url = f'https://sso.buaa.edu.cn/login;jsessionid={jsessionid}?service=https://gsmis.buaa.edu.cn/'
+            text = response.content.decode('utf-8')
+            payload = _get_hidden_items(text)
+            payload['username'] = username
+            payload['password'] = password
+            response = session.post(url, data=payload)
 
+            _LOGGER.info(f'url: {url}, status code: {response.status_code}')
+            if not response:
+                _LOGGER.debug(response.content.decode('utf-8'))
+                session = [session, False] if need_flag else session
+                return session
+        '''
         session = [session, True] if need_flag else session
         return session
     else:
@@ -104,7 +123,6 @@ def login(target, username, password, vpn=False, need_flag=None):
             return session
 
         response = session.get(target)
-
         _LOGGER.info(f'url: {target}, status code: {response.status_code}')
         if not response:
             _LOGGER.debug(response.content.decode('utf-8'))
@@ -112,9 +130,26 @@ def login(target, username, password, vpn=False, need_flag=None):
             return session
        
         if '请输入您的密码' in response.content.decode('utf-8'):
-            _LOGGER.error('fail to login.')
-            session = [session, False] if need_flag else session
-            return session
+            _LOGGER.info('fail to login, try to login again.')
+            url = 'https://sso-443.e2.buaa.edu.cn/login?service=https://gsmis.e2.buaa.edu.cn/'
+            # url = target
+            response = session.get(url, headers=header)
+            jsessionid = response.cookies['JSESSIONID']
+            url = f'https://sso-443.e2.buaa.edu.cn/login;jsessionid={jsessionid}?service=https://gsmis.e2.buaa.edu.cn/'
+            text = response.content.decode('utf-8')
+            payload = _get_hidden_items(text)
+            payload['username'] = username
+            payload['password'] = password
+            response = session.post(url, data=payload)
+
+            _LOGGER.info(f'url: {url}, status code: {response.status_code}')
+            if not response:
+                _LOGGER.debug(response.content.decode('utf-8'))
+                session = [session, False] if need_flag else session
+                return session
+            # TODO
+            if '请输入您的密码' in response.content.decode('utf-8'):
+                _LOGGER.error('fail to login.')
         
         session = [session, True] if need_flag else session
         return session
