@@ -104,7 +104,6 @@ def login(target, username, password, vpn=False, need_flag=None):
             return session
 
         header = _get_default_header()
-        #  {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'}
         url = 'https://e2.buaa.edu.cn/users/sign_in'
         #  url = 'https://e.buaa.edu.cn/users/sign_in'
 

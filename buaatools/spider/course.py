@@ -19,7 +19,7 @@ from icalendar import Calendar, Event
 from buaatools.helper import logger
 from buaatools.spider import login
 
-__all__ = ['get_response_by_xh',
+__all__ = ['get_signed_response_by_xh',
            'query_courseSize_by_xh',
            'query_name_by_xh',
            'query_course_by_xh',
@@ -40,16 +40,16 @@ HOME = {
 }
 
 paramsTable = {
+    'api/yuXuanKeApiController.do?pyfaFilter': 'body={"xh":"%s","taskId":"%s","xklcqdszxxid":"%s"}',
+    'api/yuXuanKeApiController.do?findKcxxList': 'body={"xh":"%s","pageSize":3000,"pageNum":1,"kcmc":"","xklcqdszxxid":"%s","biaoshi":"1","num":"1"}',
+    'api/yuXuanKeApiController.do?getSelectedCourses': 'body={"xh":"%s"}',
+    'api/yuXuanKeApiController.do?txSelectedCourses': 'body={"xh":"%s"}',
     'api/xuankeApiController.do?gtasksList': 'body={"xh":"%s"}', # 'obj' -> [0] -> 'id_'(taskId)/'xklcqdszxxid'
     'api/xuankeApiController.do?getUserListByXH': 'body={"xh":"%s"}', # 'obj' -> 'realname'
     'api/xuankeApiController.do?getCalendarTime': 'body={"xh":"%s"}',
     'api/xuankeApiController.do?getFlowChart': 'body={"xh":"%s","xklcqdszxxid":"%s"}',
-    'api/yuXuanKeApiController.do?pyfaFilter': 'body={"xh":"%s","taskId":"%s","xklcqdszxxid":"%s"}',
     'api/xuankeApiController.do?checkXuanKeUser': 'body={"xh":"%s","taskId":"%s","xklcqdszxxid":"%s"}',
     'api/dictionaries.do?getDictionaryData': 'body={"code":"ssxqhjd"}',
-    'api/yuXuanKeApiController.do?findKcxxList': 'body={"xh":"%s","pageSize":3000,"pageNum":1,"kcmc":"","xklcqdszxxid":"%s","biaoshi":"1","num":"1"}',
-    'api/yuXuanKeApiController.do?getSelectedCourses': 'body={"xh":"%s"}',
-    'api/yuXuaKeApiController.do?txSelectedCourses': 'body={"xh":"%s"}',
     'api/tuiXuanKeApiController.do?getDropCourses': 'body={"xh":"%s"}',
 }
 
@@ -64,7 +64,7 @@ def fill_params(params_string, xh, session, vpn=False):
             text.append(xh)
             _LOGGER.debug(f'find param: {param}({xh})')
         elif param == 'xklcqdszxxid' or param == 'taskId':
-            response = get_response_by_xh('api/xuankeApiController.do?gtasksList', xh, session=session, vpn=vpn)
+            response = get_signed_response_by_xh('api/xuankeApiController.do?gtasksList', xh, session=session, vpn=vpn)
             if not response:
                 return None
             try:
@@ -82,7 +82,7 @@ def fill_params(params_string, xh, session, vpn=False):
             exit(1)
     return params_string % tuple(text)
 
-def get_response_by_xh(api, xh, username=None, password=None, session=None, vpn=False):
+def get_signed_response_by_xh(api, xh, username=None, password=None, session=None, vpn=False):
     _LOGGER.info(f'api: {api}, vpn: {vpn}')
     opt = 'vpn' if vpn else 'normal'
 
@@ -137,7 +137,7 @@ def query_courseSize_by_xh(stage, xh, username=None, password=None, session=None
                 % (stage, ', '.join([x for x in stage_list])))
         return None
 
-    response = get_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
+    response = get_signed_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
     if not response:
         return None
 
@@ -159,14 +159,15 @@ def query_courseSize_by_xh(stage, xh, username=None, password=None, session=None
     return course_list
 
 def query_name_by_xh(stage, xh, username=None, password=None, session=None, vpn=False):
-    stage_list = {'preparatory': 'api/xuankeApiController.do?getUserListByXH',}
+    stage_list = {'preparatory': 'api/xuankeApiController.do?getUserListByXH',
+                  'adjustment': 'api/xuankeApiController.do?getUserListByXH',}
     _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
     if stage not in stage_list:
         _LOGGER.error('stage(%s) not in-built(%s).'
                 % (stage, ', '.join([x for x in stage_list])))
         return None
     
-    response = get_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
+    response = get_signed_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
     if not response:
         return None
     
@@ -178,14 +179,14 @@ def query_name_by_xh(stage, xh, username=None, password=None, session=None, vpn=
 def query_course_by_xh(stage, xh, username=None, password=None, session=None,
         begin_date=None, class_period_begin_time=None, vpn=False):
     stage_list = {'preparatory': 'api/yuXuanKeApiController.do?getSelectedCourses',
-                  'adjustment': 'api/yuXuaKeApiController.do?txSelectedCourses',
+                  'adjustment': 'api/yuXuanKeApiController.do?txSelectedCourses',
                   'ending': 'api/tuiXuanKeApiController.do?getDropCourses'}
     _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
     if stage not in stage_list:
         _LOGGER.error('stage(%s) not in-built(%s).'
                 % (stage, ', '.join([x for x in stage_list])))
         return None
-    response = get_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
+    response = get_signed_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
     if not response:
         return None
 
@@ -217,7 +218,7 @@ def query_course_by_xh(stage, xh, username=None, password=None, session=None,
         _LOGGER.info('add course(%s)' % ', '.join([course[k] for k in ['name', 'course_id', 'credit']]))
     return course_list
 
-def get_willingness_list(username, password, student_numbers, interval=2, vpn=False):
+def get_course_willingness(username, password, student_numbers, interval=2, vpn=False):
     ''' student_numbers: ['SY1906000', 'SY1906001', ...] '''
     opt = 'vpn' if vpn else 'normal'
     session, success = login.login(target=LOGIN[opt],
@@ -249,7 +250,56 @@ def get_willingness_list(username, password, student_numbers, interval=2, vpn=Fa
             else:
                 course_willingness[key] = [int(course['willingness_value'])]
         time.sleep(interval)
+    for course, willingness_value_list in course_willingness.items():
+        willingness_value_list.sort()
     return course_willingness
+
+def query_willingness_rank_by_xh(stage, xh, username, password, course_willingness, vpn=False):
+    _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
+    stage_list = ['preparatory']
+    if stage not in stage_list:
+        _LOGGER.error('stage(%s) not in-built(%s).'
+                % (stage, ', '.join([x for x in stage_list])))
+        return None
+    
+    opt = 'vpn' if vpn else 'normal'
+    session, success = login.login(target=LOGIN[opt], username=username, password=password, need_flag=True, vpn=vpn)
+    if not success:
+        _LOGGER.error('login failed.')
+        return
+    
+    courses = query_course_by_xh(stage=stage, xh=xh, session=session, vpn=vpn)
+    if not courses:
+        _LOGGER.error('query courses failed.')
+        return
+    
+    total_courses = query_courseSize_by_xh(stage=stage, xh=xh, session=session, vpn=vpn)
+    if not total_courses:
+        _LOGGER.error('query course size failed.')
+        return
+    
+    courses_size = {"%s(%s)"%(c['name'], c['course_id']): int(c['course_size']) for c in total_courses}
+
+    course_id_set = set()
+    for c in courses:
+        key = "%s(%s)" % (c['name'], c['course_id'])
+        if key in course_id_set:
+            continue
+        course_id_set.add(key)
+        csize = courses_size[key]
+        willingness_list = course_willingness[key]
+        tmp = []
+        for v in willingness_list:
+            if v >= int(c['willingness_value']):
+                tmp.append(v)
+        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>: {len(tmp)}({len(tmp)+1}/{csize}):")
+        print(tmp)
+        expect_val = 1 if csize > len(willingness_list) else willingness_list[-csize] + 1
+        if len(tmp) > csize:
+            print(logger.get_colorful_str(f"WARN: The recommended expectation is {expect_val}. "
+                "You need to adjust your willingness or you won't be able to take the course.", 'yellow'))
+        else:
+            print(logger.get_colorful_str(f"INFO: The recommended expectation is {expect_val}.", 'green'))
 
 class Courses(list):
     def __init__(self, begin_date=None, class_period_begin_time=None):

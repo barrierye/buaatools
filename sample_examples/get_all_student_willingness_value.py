@@ -13,13 +13,13 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d
 
 _LOGGER = logging.getLogger(__name__)
 
-def write_willingness_file(course_willingness, filename):
+def write_course_willingness(course_willingness, filename):
     with open(filename, 'w') as f:
         for course, willingness_value_list in course_willingness.items():
             willingness_value_list.sort()
             f.write("[%s] : %s\n" % (course, str(willingness_value_list)))
 
-def read_willingness_file(filename):
+def read_course_willingness(filename):
     course_willingness = {}
     with open(filename, 'r') as f:
         for line in f.readlines():
@@ -31,40 +31,6 @@ def read_willingness_file(filename):
             course_willingness[key] = willingness_list
     return course_willingness
 
-def query_my_willingness_rank(username, password, xh, willingness_value_list, vpn=False):
-    session, success = login.login(target='https://gsmis.e2.buaa.edu.cn:443',
-                          username=username, password=password, need_flag=True, vpn=vpn)
-    if not success:
-        return
-    
-    courses = course.query_course_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
-    if not courses:
-        return
-    
-    total_courses = course.query_courseSize_by_xh(stage='preparatory', xh=xh, session=session, vpn=vpn)
-    if not total_courses:
-        return
-    
-    courses_size = {"%s(%s)"%(c['name'], c['course_id']): int(c['course_size']) for c in total_courses}
-
-    course_id_set = set()
-    for c in courses:
-        key = "%s(%s)" % (c['name'], c['course_id'])
-        if key in course_id_set:
-            continue
-        course_id_set.add(key)
-        csize = courses_size[key]
-        willingness_list = willingness_value_list[key]
-        tmp = []
-        for v in willingness_list:
-            if v >= int(c['willingness_value']):
-                tmp.append(v)
-        print(f"{key} [my willingness: {c['willingness_value']}] <Number of students with willingness >= you>({len(tmp)}/{csize}):")
-        print(tmp)
-        print(logger.get_colorful_str(f"INFO: The recommended expectation is {tmp[-(csize-1)]}", 'green'))
-        if len(tmp) > csize:
-            print(logger.get_colorful_str("WARN: You need to adjust your willingness or you won't be able to take the course.", 'yellow'))
-
 def get_student_numbers():
     #  student_numbers = ['SY1906108', 'SY1906117', 'SY1906118']
     student_numbers = []
@@ -75,14 +41,25 @@ def get_student_numbers():
     return student_numbers
 
 if __name__ == '__main__':
-    filename = 'willingness_value_list.txt'
     mode = 'offline'
+    filename = 'course_willingness.txt'
     _LOGGER.info(f'mode: {mode}, filename: {filename}')
+
+    # get course_willingness
     if mode == 'online':
-        willingness_value_list = course.get_willingness_list(username=config.USERNAME, password=config.PASSWORD,
-                                                             student_numbers=get_student_numbers(),
-                                                             interval=1, vpn=config.VPN)
-        write_willingness_file(willingness_value_list, filename)
+        course_willingness = course.get_course_willingness(username=config.USERNAME,
+                                                           password=config.PASSWORD,
+                                                           student_numbers=get_student_numbers(),
+                                                           interval=1,
+                                                           vpn=config.VPN)
+        write_course_willingness(course_willingness, filename)
     elif mode == 'offline':
-        willingness_value_list = read_willingness_file(filename)
-    query_my_willingness_rank(config.USERNAME, config.PASSWORD, config.XH, willingness_value_list, vpn=config.VPN)
+        course_willingness = read_course_willingness(filename)
+    
+    # query willingess rank
+    course.query_willingness_rank_by_xh(stage=config.STAGE,
+                                        xh=config.XH,
+                                        username=config.USERNAME,
+                                        password=config.PASSWORD,
+                                        course_willingness=course_willingness,
+                                        vpn=config.VPN)

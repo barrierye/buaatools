@@ -16,7 +16,7 @@ if __name__ == '__main__':
                                             username=config.USERNAME,
                                             password=config.PASSWORD,
                                             begin_date=config.BEGIN_DATE,
-                                            vpn=True)
+                                            vpn=config.VPN)
     if courses_obj:
         courses_obj.check_request_credit(student_type=config.STUDENT_TYPE,
                                          total_request_credit_dict=config.REQUEST_CREDIT,
