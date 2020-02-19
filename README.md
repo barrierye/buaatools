@@ -44,11 +44,11 @@ if courses:
 
 ## Some sample examples
 
-在`./sample_examples`下存放一些简单的使用例子，具体用法请查看`./sample_examples/README.md`：
+在`./examples`下存放一些简单的使用例子，具体用法请查看`./examples/README.md`：
 
 ```bash
-$ tree sample_examples
-sample_examples
+$ tree examples
+examples
 ├── README.md
 ├── check_request_credit.py
 ├── config.example.py

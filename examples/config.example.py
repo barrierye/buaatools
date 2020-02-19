@@ -161,15 +161,15 @@ PREVIOUS_FINISHED_CREDIT_LIST = [{
         'credit': 2,
     }, {
        'name': '软件技术基础',
-        'course_id': '07112407',
-        'credit': 2,
+       'course_id': '07112407',
+       'credit': 2,
     }, {
        'name': '学术英语（硕）',
-        'course_id': '12114112',
-        'credit': 2,
+       'course_id': '12114112',
+       'credit': 2,
     }, {
        'name': '中国特色社会主义理论与实践研究',
-        'course_id': '28111102',
-        'credit': 2,
+       'course_id': '28111102',
+       'credit': 2,
     },
 ]
