@@ -19,4 +19,4 @@ if __name__ == '__main__':
                                             vpn=config.VPN)
     if courses_obj:
         courses_obj.gen_ics_file(classbreak=config.CLASSBREAK,
-                                 filename='curriculum.ics')
+                                 filename='./data/curriculum.ics')

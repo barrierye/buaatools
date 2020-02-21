@@ -153,3 +153,18 @@ def login(target, username, password, vpn=False, need_flag=None):
         session = [session, True] if need_flag else session
         return session
 
+def simple_login(target, username=None, password=None, session=None, vpn=False, need_flag=False):
+    if session is None:
+        if username is None or password is None:
+            _LOGGER.error('username or password is None.')
+            session = [session, False] if need_flag else session
+            return session
+        session, success = login(target=target, username=username,
+                password=password, need_flag=True, vpn=vpn)
+        if not success:
+            _LOGGER.error('Failed to login.')
+            session = [session, False] if need_flag else session
+            return session
+        _LOGGER.info('login success.')
+    session = [session, True] if need_flag else session
+    return session

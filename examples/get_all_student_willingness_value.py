@@ -34,7 +34,7 @@ def read_course_willingness(filename):
 def get_student_numbers():
     #  student_numbers = ['SY1906108', 'SY1906117', 'SY1906118']
     student_numbers = []
-    with open('全日制硕士收录记录.csv') as f:
+    with open('./data/全日制硕士收录记录.csv') as f:
         for line in f:
             xh = line.split(',')[2]
             student_numbers.append(xh)
@@ -42,7 +42,7 @@ def get_student_numbers():
 
 if __name__ == '__main__':
     mode = 'offline'
-    filename = 'course_willingness.txt'
+    filename = './data/course_willingness.txt'
     _LOGGER.info(f'mode: {mode}, filename: {filename}')
 
     # get course_willingness

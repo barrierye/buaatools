@@ -86,16 +86,10 @@ def get_signed_response_by_xh(api, xh, username=None, password=None, session=Non
     _LOGGER.info(f'api: {api}, vpn: {vpn}')
     opt = 'vpn' if vpn else 'normal'
 
-    # login
-    if session is None:
-        if username is None or password is None:
-            _LOGGER.error('username or password is None.')
-            exit(1)
-        session, success = login.login(target=LOGIN[opt], username=username, password=password, need_flag=True, vpn=vpn)
-        if not success:
-            _LOGGER.error('Failed to login.')
-            return None
-        _LOGGER.info('login success.')
+    session, success = login.simple_login(target=LOGIN[opt], username=username,
+            password=password, session=session, vpn=vpn, need_flag=True)
+    if not success:
+        return None
     
     url = HOME[opt] + api
     # here is a stupid authenticate, you can query any info by using different xh after login.
@@ -129,6 +123,40 @@ def get_signed_response_by_xh(api, xh, username=None, password=None, session=Non
     
     return response
 
+def query_photo_by_xh(stage, xh, username, password=None, session=None, vpn=False, queryStudentId=None, filename=None):
+    stage_list = ['preparatory', 'adjustment', 'ending']
+    _LOGGER.info(f'stage: {stage}, xh: {xh}, queryStudentId: {queryStudentId}, vpn: {vpn}')
+    if stage not in stage_list:
+        _LOGGER.error('stage(%s) not in-built(%s).'
+                % (stage, ', '.join([x for x in stage_list])))
+        return None
+    
+    opt = 'vpn' if vpn else 'normal'
+    session, success = login.simple_login(target=LOGIN[opt], username=username,
+            password=password, session=session, vpn=vpn, need_flag=True)
+    if not success:
+        return None
+
+    # authenticate
+    payload = {
+        'ReturnURL': '',
+        'remoteUser': username,
+        'userName': xh,
+    }
+    url = HOME[opt] + 'loginController.do?checkuserSSO'
+    response = session.post(url, data=payload)
+
+    url = HOME[opt] + 'tbXjXsxxjc2Controller.do'
+    queryStudentId = xh if queryStudentId is None else queryStudentId
+    params = 'showImg&bs=1&xh=%s' % queryStudentId
+    response = session.get(url, params=params)
+    _LOGGER.debug(response.url)
+    if filename is not None:
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+            _LOGGER.info(f'save as {filename}.')
+    return response.content
+
 def query_courseSize_by_xh(stage, xh, username=None, password=None, session=None, vpn=False):
     stage_list = {'preparatory': 'api/yuXuanKeApiController.do?findKcxxList',}
     _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
@@ -158,23 +186,29 @@ def query_courseSize_by_xh(stage, xh, username=None, password=None, session=None
         course_list.append(course)
     return course_list
 
-def query_name_by_xh(stage, xh, username=None, password=None, session=None, vpn=False):
+def query_name_by_xh(stage, xh, username=None, password=None, session=None, vpn=False, param='realname'):
     stage_list = {'preparatory': 'api/xuankeApiController.do?getUserListByXH',
-                  'adjustment': 'api/xuankeApiController.do?getUserListByXH',}
+                  'adjustment': 'api/xuankeApiController.do?getUserListByXH',
+                  'ending': 'api/xuankeApiController.do?getUserListByXH',}
     _LOGGER.info(f'stage: {stage}, xh: {xh}, vpn: {vpn}')
     if stage not in stage_list:
         _LOGGER.error('stage(%s) not in-built(%s).'
                 % (stage, ', '.join([x for x in stage_list])))
         return None
-    
+    # realname: name, username: studentID, rolecoda: [student, teacher]
+    param_list = ['realname', 'username', 'rolecode']
+    if param not in param_list:
+        _LOGGER.error('param(%s) not in param_list(%s).'
+                % (param, ', '.join([x for x in param_list])))
+
     response = get_signed_response_by_xh(stage_list[stage], xh, username, password, session, vpn)
     if not response:
         return None
     
     obj = response.json().get('obj')
-    realname = obj.get('realname')
+    name = obj.get(param)
     
-    return realname
+    return name
 
 def query_course_by_xh(stage, xh, username=None, password=None, session=None,
         begin_date=None, class_period_begin_time=None, vpn=False):

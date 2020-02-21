@@ -11,7 +11,7 @@ USERNAME = 'barriery'
 PASSWORD = '***********'
 # 学号
 XH = 'SY1906***'
-# VPN
+# 是否校外访问
 VPN = True
 
 # 本学期第零周的开始日期
@@ -73,3 +73,20 @@ PREVIOUS_FINISHED_CREDIT_LIST = [...]
 1. 修改`config.example.py`文件
 
 2. 运行`get_name_by_xh.py`文件
+
+## get_photo_by_xh.py
+
+通过学号获取入学照片。
+
+1. 修改`config.example.py`文件
+
+2. 运行`get_photo_by_xh.py`文件
+
+## get_total_courses.py
+
+获取本学期所有课程信息（查询课容量）。
+
+1. 修改`config.example.py`文件
+
+2. 运行`get_total_courses.py`文件
+
