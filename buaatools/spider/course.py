@@ -150,7 +150,10 @@ def query_photo_by_xh(stage, xh, username, password=None, session=None, vpn=Fals
     queryStudentId = xh if queryStudentId is None else queryStudentId
     params = 'showImg&bs=1&xh=%s' % queryStudentId
     response = session.get(url, params=params)
-    _LOGGER.debug(response.url)
+    _LOGGER.debug(f'url: {response.url}, status code: {response.status_code}')
+    if not response.content:
+        _LOGGER.error(f'The photo does not exist, possibly because the student number({queryStudentId}) does not exist.')
+        return None
     if filename is not None:
         with open(filename, 'wb') as f:
             f.write(response.content)
