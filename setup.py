@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'pytz==2019.2',
         'icalendar==4.0.3',
-        'requests==2.22.0',
+        'requests==2.31.0',
     ],
 
     packages = find_packages(where='.'),
